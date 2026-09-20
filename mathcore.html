@@ -8513,6 +8513,7 @@ const GDE_SURFACES = {
     loss: (x,y) => 0.5*(x*x + 1.4*y*y),
     grad: (x,y) => [x, 1.4*y],
     opt: [0,0],
+    optLab: 'global minimum',
     range: 3.2,
     desc: 'This is the loss surface of logistic regression. It is convex, meaning it has exactly one minimum and no false valleys. Gradient descent is guaranteed to find the global best from any starting point. Watch how the ball always rolls straight to the bottom.'
   },
@@ -8522,6 +8523,7 @@ const GDE_SURFACES = {
     loss: (x,y) => 0.12*(x*x - y*y) + 0.6,
     grad: (x,y) => [0.24*x, -0.24*y],
     opt: [0,0],
+    optLab: 'saddle point \u2014 gradient zero, not a minimum',
     range: 3.4,
     desc: 'A saddle point curves up in one direction and down in another, like a horse saddle. The gradient is zero at the center even though it is not a minimum. These are everywhere in neural network loss surfaces, and they are why naive gradient descent can stall. Modern optimizers add momentum to escape them.'
   },
@@ -8531,6 +8533,7 @@ const GDE_SURFACES = {
     loss: (x,y) => 0.04*x*x + 1.6*y*y,
     grad: (x,y) => [0.08*x, 3.2*y],
     opt: [0,0],
+    optLab: 'global minimum, at the end of a long flat floor',
     range: 3.4,
     desc: 'A ravine is steep in one direction and nearly flat in another. With a high learning rate the ball bounces wildly across the steep walls while barely moving along the flat valley floor. This is one of the most common real-world training problems, and it motivated adaptive optimizers like Adam.'
   },
@@ -8540,6 +8543,7 @@ const GDE_SURFACES = {
     loss: (x,y) => 0.6 + 0.18*(x*x+y*y) - 0.7*Math.cos(2.2*x)*Math.cos(2.2*y),
     grad: (x,y) => [0.36*x + 1.54*Math.sin(2.2*x)*Math.cos(2.2*y), 0.36*y + 1.54*Math.cos(2.2*x)*Math.sin(2.2*y)],
     opt: [0,0],
+    optLab: 'global minimum \u2014 only one basin of many',
     range: 3.2,
     desc: 'A non-convex surface with many local minima and bumps. Where the ball ends up depends entirely on where it started. This is the true nature of neural network optimization, and it is why the same model trained twice can land in different places. Hit reset a few times and watch it settle into different valleys.'
   }
@@ -8699,6 +8703,13 @@ function gdeDraw() {
   const optPr=gdeProject(bOpt[0],bOpt[1],gdeBiasedLoss(bOpt[0],bOpt[1])+0.04);
   ctx.fillStyle='rgba(61,220,132,0.6)';
   ctx.beginPath(); ctx.arc(optPr[0],optPr[1],5,0,2*Math.PI); ctx.fill();
+  if(s.optLab){
+    ctx.fillStyle='rgba(61,220,132,0.85)';
+    ctx.font='11px ui-monospace,SFMono-Regular,Menlo,monospace';
+    ctx.textAlign='left'; ctx.textBaseline='middle';
+    ctx.fillText(s.optLab, Math.min(optPr[0]+10, W-8-ctx.measureText(s.optLab).width), optPr[1]-10);
+    ctx.textAlign='start'; ctx.textBaseline='alphabetic';
+  }
   // current ball
   const pr=gdeProject(gde.w1,gde.w2,gdeBiasedLoss(gde.w1,gde.w2)+0.1);
   ctx.fillStyle='#FF5F8E';
@@ -8852,6 +8863,7 @@ function gdeApplyCustom() {
     loss: (x,y) => { const v=f(x,y); return isFinite(v)?v:0; },
     grad: (x,y) => gdeNumGrad(f, x, y),
     opt: [0,0],
+    optLab: 'origin (not necessarily this function\u2019s minimum)',
     range: 3.2,
     desc: 'This is your own function f(x,y) = ' + inp.value + '. Gradient descent uses a numerically estimated gradient (finite differences) to roll downhill. Note that for non-convex functions, where the ball lands depends on where it starts. Hit Reset to try different starting points.'
   };
@@ -8882,8 +8894,8 @@ function gdeNdUpdate() {
   if (info) {
     const shown = gdeNDim.scales.slice(0,2).map(s=>s.toFixed(1)).join(', ');
     const hidden = n - 2;
-    info.innerHTML = `A ${n}-dimensional loss bowl has ${n} weight axes. We project onto the <span style="color:#a78bfa">2 steepest directions</span> (curvatures ${shown}) and draw loss as height. ` +
-      (hidden>0 ? `The other <span style="color:var(--accent3)">${hidden} dimension${hidden>1?'s are':' is'}</span> compressed away, exactly how PCA reduces ${n}D data to a viewable 3D picture.` : `With n=2 nothing is hidden: this is the full surface.`);
+    info.innerHTML = `A ${n}-dimensional loss bowl has ${n} weight axes. We keep the <span style="color:#a78bfa">2 steepest directions</span> (curvatures ${shown}) and draw loss as height. ` +
+      (hidden>0 ? `The other <span style="color:var(--accent3)">${hidden} dimension${hidden>1?'s are':' is'}</span> dropped, the same bargain PCA strikes when it reduces ${n}D data to a viewable picture: keep two axes, discard the rest. The criterion differs, though. PCA keeps the directions of greatest variance, which for a bowl like this one would be the <em>flattest</em> directions, not the steepest.` : `With n=2 nothing is hidden: this is the full surface.`);
   }
 
   // register the projected surface using the top-2 curvatures
@@ -8898,7 +8910,7 @@ function gdeNdUpdate() {
     grad: (x,y) => [k1*x, k2*y],
     opt: [0,0],
     range: 3.0,
-    desc: `You are looking at a ${n}-dimensional quadratic loss bowl, projected down to its two most informative axes and rendered as a 3D surface. The ${n>2?(n-2)+' hidden dimensions contribute a constant floor to the loss (the residual you cannot see), which is the information lost in projection.':'full surface is shown since n=2.'} This is the core trick behind visualizing any high-dimensional model: pick the directions that matter most and draw those. Real networks have millions of dimensions; we only ever see their shadows.`
+    desc: `You are looking at a ${n}-dimensional quadratic loss bowl, reduced to its two steepest axes and rendered as a 3D surface. The ${n>2?(n-2)+' hidden dimensions are not sitting at their own minima, and the loss they still carry shows up here as a constant floor under the visible surface. Slide the ball to the centre of this picture and the loss does not reach zero, because the axes you cannot see are still some distance from theirs.':'full surface is shown since n=2.'} This is the core trick behind visualizing any high-dimensional model: pick two directions, draw those, and keep in mind what the other axes are doing. Real networks have millions of dimensions; we only ever see their shadows.`
   };
   gde.key = 'ndim';
   gdeBuildSurfaceList();
@@ -37328,9 +37340,9 @@ function txmDrawPanels(){
       <input id="gde-lr" type="range" min="0.01" max="0.95" step="0.01" value="0.10" oninput="gdeLrUpdate()" style="width:100%;accent-color:var(--accent)">
     </div>
     <div style="margin-bottom:1.25rem">
-      <div style="display:flex;justify-content:space-between;font-family:var(--mono);font-size:.7rem;color:var(--muted);margin-bottom:5px"><span>Bias b (shifts minimum)</span><span id="gde-bval" style="color:#3DDC84">0.0</span></div>
+      <div style="display:flex;justify-content:space-between;font-family:var(--mono);font-size:.7rem;color:var(--muted);margin-bottom:5px"><span>Bias b (shifts the surface)</span><span id="gde-bval" style="color:#3DDC84">0.0</span></div>
       <input id="gde-b" type="range" min="-2" max="2" step="0.1" value="0" oninput="gdeBiasUpdate()" style="width:100%;accent-color:#3DDC84">
-      <div style="font-family:var(--mono);font-size:.58rem;color:var(--muted);margin-top:.4rem;line-height:1.5">The bias is a third learnable parameter. Here it slides the whole loss bowl, moving the optimal weights. In training, the bias is optimized by gradient descent exactly like any weight.</div>
+      <div style="font-family:var(--mono);font-size:.58rem;color:var(--muted);margin-top:.4rem;line-height:1.5">The bias is a third learnable parameter. Here it slides the whole surface along the diagonal, carrying its stationary point with it. In training, the bias is optimized by gradient descent exactly like any weight.</div>
     </div>
     <div style="display:flex;gap:8px;margin-bottom:1.25rem;flex-wrap:wrap">
       <button onclick="gdeStart()" id="gde-play" style="flex:1;background:var(--accent);color:var(--bg);border:none;border-radius:8px;padding:.6rem;font-family:var(--mono);font-size:.74rem;font-weight:700;cursor:pointer">&#9654; Play</button>
