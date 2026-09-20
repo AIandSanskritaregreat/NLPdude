@@ -25692,7 +25692,7 @@ PH_PAGES.phperc = `
 <h2 class="lesson-h2">The Mel Scale</h2>
 <p class="lesson-p">Pitch perception is also non-linear. The gap between 200 and 300 Hz sounds much larger than the gap between 5000 and 5100 Hz, even though both are 100 Hz. The <strong>mel scale</strong> is a warping of frequency so that equal distances in mels sound like equal distances in pitch:</p>
 <div class="lesson-math">\\[m = 1127 \\ln\\left(1 + \\frac{f}{700}\\right)\\]</div>
-<p class="lesson-p">Below about 1000 Hz the curve is close to linear; above it, it compresses hard. This single formula reappears in Section 14.5.4 as the basis for the filterbank, and the reason to use it there is exactly the reason to introduce it here: a feature that spends its resolution the way the ear does is a better input than one that spreads it evenly.</p>
+<p class="lesson-p">The two constants are chosen together so that 1000 Hz lands on exactly 1000 mels, and that is the only frequency where the two scales read the same number. Below it mels run ahead of hertz &mdash; 500 Hz already sits at 607 mels &mdash; and above it the curve compresses hard, so that the entire span from 1 to 8 kHz is worth only another 1840 mels. This single formula reappears in Section 14.5.4 as the basis for the filterbank, and the reason to use it there is exactly the reason to introduce it here: a feature that spends its resolution the way the ear does is a better input than one that spreads it evenly.</p>
 
 <div class="viz-container">
   <div class="viz-header"><span class="viz-label">Interactive &middot; The Mel Curve</span></div>
@@ -25921,7 +25921,7 @@ function pmlDraw(){
   mtTxt(x, 'first step: ' + gaps[0].toFixed(0) + ' Hz', RX, 118, {size:10, col:MTC.a4});
   mtTxt(x, 'last step: ' + gaps[gaps.length-1].toFixed(0) + ' Hz', RX, 138, {size:10, col:MTC.a2});
   mtTxt(x, (gaps[gaps.length-1]/gaps[0]).toFixed(1) + '\u00d7 wider', RX, 162, {size:12, col:MTC.a2, weight:'700'});
-  mtSet('pml-cap', 'Every step is the same size in mels, meaning every step sounds like the same pitch increase. On the hertz axis at the right, the same steps are visibly unequal: the first spans ' + gaps[0].toFixed(0) + ' Hz and the last spans ' + gaps[gaps.length-1].toFixed(0) + ' Hz, ' + (gaps[gaps.length-1]/gaps[0]).toFixed(1) + ' times wider. Below roughly 1000 Hz the curve is nearly straight, which is why the mel and hertz scales agree in that region and diverge above it.');
+  mtSet('pml-cap', 'Every step is the same size in mels, meaning every step sounds like the same pitch increase. On the hertz axis at the right, the same steps are visibly unequal: the first spans ' + gaps[0].toFixed(0) + ' Hz and the last spans ' + gaps[gaps.length-1].toFixed(0) + ' Hz, ' + (gaps[gaps.length-1]/gaps[0]).toFixed(1) + ' times wider. The curve only hugs a straight line over the first couple of hundred hertz, where the logarithm is still close to its argument; by 500 Hz it has bent well away. The two axes read the same number at exactly one frequency, 1000 Hz, which is where the constants 1127 and 700 put the crossing.');
 }
 
 /* ══ 14.4.4 READING PHONES OFF THE WAVEFORM ═══════════════ */
@@ -26360,10 +26360,10 @@ function pssDraw(){
 
 /* ── Formant Comparator ───────────────────────────────────── */
 const PFM = [
-  {p:'ih', word:'bit',  F1:470, F2:2100, note:'High front. F1 is low because the tongue is high; F2 is high because it is front.'},
+  {p:'ih', word:'bit',  F1:470, F2:2100, note:'High front, but lax: the tongue sits a little lower and a little less far forward than for [iy], so F1 comes up and F2 comes down relative to it.'},
   {p:'ae', word:'bat',  F1:800, F2:1860, note:'Low front. The tongue drops, so F1 rises sharply. F2 stays fairly high since the tongue is still forward.'},
-  {p:'uh', word:'book', F1:800, F2:1100, note:'Low back. F1 is high like [ae], but F2 has fallen because the tongue has moved back.'},
-  {p:'iy', word:'beet', F1:540, F2:2581, note:'The highest and frontest vowel: lowest F1 paired with the highest F2 of the set.'},
+  {p:'aa', word:'bot',  F1:730, F2:1090, note:'Low back. The jaw is open about as far as for [ae], so F1 is similarly high, but the tongue has retracted and F2 has fallen by nearly 800 Hz.'},
+  {p:'iy', word:'beet', F1:270, F2:2400, note:'The highest and frontest vowel: lowest F1 paired with the highest F2 of the set.'},
   {p:'uw', word:'boot', F1:320, F2:900,  note:'High back and rounded. Both formants are low, which is as far from [iy] as English gets.'}
 ];
 let _pfm = 0;
@@ -27101,10 +27101,10 @@ PH_PAGES.phmel = `
 <h2 class="lesson-h2">The Mel Scale</h2>
 <p class="lesson-p">The <strong>mel scale</strong> is a mapping from physical frequency to perceived pitch, calibrated so that equal steps in mels sound like equal steps in pitch:</p>
 <div class="lesson-math">\\[\\text{mel}(f) = 1127 \\ln\\left(1 + \\frac{f}{700}\\right)\\]</div>
-<p class="lesson-p">Below about 1000 Hz the logarithm is nearly linear, so mels and hertz agree. Above that the curve flattens, meaning ever-larger jumps in hertz are needed to produce the same perceived change in pitch. The interval from 200 to 300 Hz is clearly audible as a pitch change; the interval from 7000 to 7100 Hz is barely noticeable at all.</p>
+<p class="lesson-p">The constants are calibrated so that the two scales cross at 1000 Hz, which is also 1000 mels, and that crossing is the one place they agree: 500 Hz is 607 mels, while 4000 Hz is only 2146. Above the crossing the curve flattens, meaning ever-larger jumps in hertz are needed to produce the same perceived change in pitch. The interval from 200 to 300 Hz is clearly audible as a pitch change; the interval from 7000 to 7100 Hz is barely noticeable at all.</p>
 
 <h2 class="lesson-h2">The Filterbank</h2>
-<p class="lesson-p">To apply that warping, the spectrum is pooled through a bank of overlapping triangular filters whose centres are equally spaced <em>in mels</em>, and therefore unequally spaced in hertz: narrow and closely packed at low frequencies, broad and sparse at high ones. Each filter multiplies the spectrum by its triangle and sums, collapsing a whole region into a single number \\(m_i\\). Eighty channels is a common choice, reducing several hundred DFT bins to eighty values that are better matched to perception.</p>
+<p class="lesson-p">To apply that warping, the spectrum is pooled through a bank of overlapping triangular filters whose centres are equally spaced <em>in mels</em>, and therefore unequally spaced in hertz: narrow and closely packed at low frequencies, broad and sparse at high ones. Each filter multiplies the spectrum by its triangle and sums, collapsing a whole region into a single number \\(m_i\\). Implementations normally divide each channel by the width of its triangle, so that a broad high-frequency filter is not credited with more energy merely for covering more hertz; the figure below follows that convention. Eighty channels is a common choice, reducing several hundred DFT bins to eighty values that are better matched to perception.</p>
 
 <div class="viz-container">
   <div class="viz-header"><span class="viz-label">Interactive &middot; The Filterbank Overlay</span></div>
@@ -27210,12 +27210,16 @@ function pfbDraw(){
   for(let i=0;i<N;i++){
     const lo = edges[i], ce = edges[i+1], hi = edges[i+2];
     // integrate spectrum against triangle
-    let acc = 0, cnt = 0;
-    for(let f=lo; f<hi; f+=20){
+    // a fixed count, not a fixed Hz step: the narrowest low-frequency
+    // triangles are only tens of hertz wide and a coarse step under-integrates them
+    const STEPS = 64;
+    let acc = 0;
+    for(let t=0; t<STEPS; t++){
+      const f = lo + (hi-lo)*(t+0.5)/STEPS;
       const tri = f < ce ? (f-lo)/(ce-lo) : 1-(f-ce)/(hi-ce);
-      acc += spec(f)*Math.max(0,tri); cnt++;
+      acc += spec(f)*Math.max(0,tri);
     }
-    const v = cnt ? acc/cnt : 0;
+    const v = acc/STEPS;
     const bx = L + i*((PW)/N);
     const on = i===sel;
     mtRR(x, bx, by+bh - v*bh*2.2, Math.max(3,bw), Math.max(2, v*bh*2.2), 3);
@@ -27224,7 +27228,7 @@ function pfbDraw(){
   }
   mtTxt(x, 'ONE SCALAR PER CHANNEL', L, by-6, {size:9, col:MTC.muted});
   const lo = edges[sel], hi = edges[sel+2];
-  mtSet('pfb-cap', `Filter <b style="color:var(--accent2)">m${sel+1}</b> spans ${lo.toFixed(0)} to ${hi.toFixed(0)} Hz, a width of ${(hi-lo).toFixed(0)} Hz. Compare it with the last filter, which spans ${(edges[N+1]-edges[N-1]).toFixed(0)} Hz: the same perceptual distance costs many times more hertz up there. Each triangle multiplies the spectrum beneath it and sums the result into one number, so ${N} filters replace several hundred DFT bins.`);
+  mtSet('pfb-cap', `Filter <b style="color:var(--accent2)">m${sel+1}</b> spans ${lo.toFixed(0)} to ${hi.toFixed(0)} Hz, a width of ${(hi-lo).toFixed(0)} Hz. Compare it with the last filter, which spans ${(edges[N+1]-edges[N-1]).toFixed(0)} Hz: the same perceptual distance costs many times more hertz up there. Each triangle multiplies the spectrum beneath it and averages the result into one number, width-normalised so that broad channels are not flattered by their span, and so ${N} filters replace several hundred DFT bins.`);
 }
 
 /* ── Log compression ──────────────────────────────────────── */
