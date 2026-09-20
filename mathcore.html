@@ -1506,7 +1506,8 @@ PAGES.words = `
 <tr style="border-bottom:1px solid var(--border)"><td style="padding:.45rem .75rem;color:var(--text)">COCA</td><td style="text-align:right;padding:.45rem .75rem;color:var(--accent)">2,000,000</td><td style="text-align:right;padding:.45rem .75rem;color:var(--muted)">440,000,000</td></tr>
 <tr><td style="padding:.45rem .75rem;color:var(--text)">Google n-grams</td><td style="text-align:right;padding:.45rem .75rem;color:var(--accent)">13,000,000+</td><td style="text-align:right;padding:.45rem .75rem;color:var(--muted)">1,000,000,000,000</td></tr>
 </table></div>
-<p class="lesson-p" style="font-size:.9rem;color:var(--muted)">These are published counts for four widely cited corpora, rounded. Treat them as order-of-magnitude reference points rather than exact quantities: every one of these numbers depends on the tokenizer, on whether case is folded, and on whether numbers and punctuation are counted, so two papers can report different |V| for the same corpus without either being wrong.</p>
+<p class="lesson-p" style="font-size:.9rem;color:var(--muted)">These are published counts for four widely cited corpora, rounded, and two cautions apply before reading anything into them. The first is that every one of these numbers depends on the tokenizer, on whether case is folded, and on whether numbers and punctuation are counted, so two papers can report different |V| for the same corpus without either being wrong.</p>
+<p class="lesson-p" style="font-size:.9rem;color:var(--muted)">The second matters more. Herdan’s Law describes how \\(|V|\\) grows as you read <em>further into one corpus</em>, and these are four different corpora, separated by genre, by century, and by how they were assembled. The slope between any two rows is therefore not \\(\beta\\), and it is worth checking that for yourself: Shakespeare to Brown gives 1.65, which is not merely outside the usual range but impossible for a law with \\(\beta &lt; 1\\), while COCA to Google n-grams gives 0.24. The table is here for scale, to show that vocabulary is still climbing after six orders of magnitude of corpus size. To see \\(\beta\\) itself you have to fit it within a single text, which is exactly what the simulator at the end of this section does.</p>
 <p class="lesson-p"><strong style="color:var(--accent)">Consequence:</strong> no matter how large the training corpus, a model will always see unknown words at test time. This is the <strong>unknown word problem</strong>.</p>
 <h2 class="lesson-h2">Function Words vs. Content Words</h2>
 <p class="lesson-p">Vocabulary keeps growing because words fall into two groups that behave very differently.</p>
@@ -33279,9 +33280,11 @@ function snqDraw(){
   mtTxt(x, 'the light normalizer strips tags and filled pauses only; the full one also folds case, punctuation, numerals, spelling and contractions',
     L, 168, {size:8.5, col:MTC.muted});
   const flip = (vals[0][0] > vals[1][0]) !== (vals[0][1] > vals[1][1]);
+  // name the winner the numbers actually give, rather than asserting one
+  const winner = j => vals[0][j] < vals[1][j] ? 'A' : 'B';
   mtSet('snq-cap', flip
-    ? 'The ranking inverts. Under the light normalizer system B wins by ' +
-      Math.abs(vals[0][0] - vals[1][0]).toFixed(1) + ' points; under the full one system A wins by ' +
+    ? 'The ranking inverts. Under the light normalizer system ' + winner(0) + ' wins by ' +
+      Math.abs(vals[0][0] - vals[1][0]).toFixed(1) + ' points; under the full one system ' + winner(1) + ' wins by ' +
       Math.abs(vals[0][1] - vals[1][1]).toFixed(1) + '. Neither system changed. Two papers reporting these numbers without naming their normalizer would appear to contradict each other while both being correct.'
     : 'Both normalizers agree on the ranking here.');
 }
