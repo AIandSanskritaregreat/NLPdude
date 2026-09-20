@@ -34752,10 +34752,10 @@ function coskSet(){
 
 // ── 11.1.4 VIZ: INVERTED INDEX ─────────────────────────────
 const IDX_DOCS=[
-  {id:'D1', txt:'sweet love sweet'},
-  {id:'D2', txt:'love wit fool'},
-  {id:'D3', txt:'sweet fool sweet wit'},
-  {id:'D4', txt:'battle love'}
+  {id:'D1', txt:'ridge cairn ridge'},
+  {id:'D2', txt:'cairn scree summit'},
+  {id:'D3', txt:'ridge summit ridge scree'},
+  {id:'D4', txt:'traverse cairn'}
 ];
 let _idx2={ built:false, fwd:false, q:null };
 function idx2Init(){ _idx2={built:false,fwd:false,q:null}; idx2Render();
@@ -36184,9 +36184,9 @@ function kpDraw(){
 }
 
 // ── 8.7 VIZ: PARALLEL TRAINING ─────────────────────────────
-const PTRAIN_IN=['So','long','and','thanks','for'];
-const PTRAIN_NEXT=['long','and','thanks','for','all'];
-const PTRAIN_P=[0.41,0.58,0.36,0.74,0.52];
+const PTRAIN_IN=['The','kettle','began','to','whistle'];
+const PTRAIN_NEXT=['kettle','began','to','whistle','loudly'];
+const PTRAIN_P=[0.06,0.22,0.81,0.35,0.44];
 let _ptrain={ on:false };
 function ptrainBuild(){ ptrainReset(); }
 function ptrainReset(){ _ptrain.on=false; ptrainDraw(); const c=document.getElementById('ptrain-caption'); if(c) c.textContent='Each position predicts its next token. Press the button to score every position at once, the way a transformer trains.'; }
