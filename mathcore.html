@@ -33943,7 +33943,9 @@ function sxbDraw(){
     mtSet('sxb-cap', 'Press "new problem" for a different n, k, p and s. The seven-layer stack is the wav2vec 2.0 and HuBERT front end and does not change.');
   } else if(_sxb.b === 1){
     const tgts = ['ab','aab','abc','aa'];
-    const T = 4 + Math.floor(shsR(_sxb.seed, 47) * 4);
+    // reaches down past T = U + r so the feasibility case actually occurs;
+    // at T >= 4 no target here can violate it and that branch stayed dead
+    const T = 2 + Math.floor(shsR(_sxb.seed, 47) * 6);
     const tgt = tgts[Math.floor(shsR(_sxb.seed, 53) * tgts.length)];
     const V = 3;
     mtTxt(x, 'Bench two', L, 20, {size:9, col:MTC.a1, weight:'700'});
