@@ -6279,7 +6279,7 @@ ${lrH3('4.3.1', 'Scoring a Real Review, Word by Word', 'flagship')}
 </div>
 <p class="lesson-p">Press play and the model reads the review one token at a time. Every token that triggers a feature increments its counter. When the scan finishes, the six values are multiplied by their weights, accumulated into <em>z</em>, and squashed. Then <strong>drag any weight</strong> and see how the answer responds: the negative-lexicon weight is doing nearly all the work holding this review down, and a small change to it flips the result.</p>
 ${lrFig('Interactive \u00b7 Six features, one review, live', 'lr-review')}
-<p class="lesson-p">The features land at \\(x = (3, 3, 1, 3, 0, 4.01)\\), the final score comes to \\(z = 0.807\\), and \\(\\sigma(0.807) = 0.69\\), so the model calls it positive, but only just. That hesitancy is the correct response to a genuinely mixed review, and it is information a hard rule would have thrown away. Nudge \\(w_2\\) from \\(-3.3\\) to \\(-3.6\\) and the verdict flips: three clicks of one slider is all that separates the two answers.</p>
+<p class="lesson-p">The features land at \\(x = (3, 3, 1, 3, 0, 4.01)\\), the final score comes to \\(z = 0.706\\), and \\(\\sigma(0.706) = 0.67\\), so the model calls it positive, but only just. That hesitancy is the correct response to a genuinely mixed review, and it is information a hard rule would have thrown away. Nudge \\(w_2\\) from \\(-3.3\\) to \\(-3.6\\) and the verdict flips: three clicks of one slider is all that separates the two answers.</p>
 
 ${lrH3('4.3.2', 'Designing Features for a New Task')}
 <p class="lesson-p">Nothing in the machinery is specific to sentiment. Change the features and the same classifier does a different job. Consider <strong>sentence segmentation</strong>: given a period, decide whether it ends a sentence or marks an abbreviation. The features are now about the local context of the character.</p>
@@ -7085,7 +7085,7 @@ const LR_REVIEW = {
   tokens: "The battery barely lasts a day , and the fan is loud enough to hear from the next room . No , this is not a quiet machine . But the keyboard is superb , the screen is gorgeous , and I have not missed my old laptop once . It won me over .".split(' '),
   posLex: ['superb','gorgeous','won'],
   negLex: ['barely','loud','no'],
-  weights: { w1:2.5, w2:-3.3, w3:-1.2, w4:0.5, w5:2.0, w6:0.7, b:0.1 },
+  weights: { w1:2.1, w2:-2.6, w3:-0.9, w4:0.3, w5:1.6, w6:0.6, b:-0.2 },
   // feature values computed from the text above, not hand-entered
   feats: null
 };
@@ -16807,8 +16807,8 @@ function anisoDraw(){
 }
 
 // ── 10.4 VIZ: HEAD-SWAPPING BENCH ──────────────────────────
-const BENCH_LEX={great:2,delicious:2,loved:2,excellent:2,wonderful:2,superb:2,charming:1.5,fun:1.5,good:1.2,tasty:1.5,bland:-1.5,boring:-1.5,predictable:-1.2,lacks:-1.5,terrible:-2,awful:-2,dull:-1.5,slow:-1,bad:-1.5,mediocre:-1.3,soggy:-1.4};
-const BENCH_SENTS=['The pasta was delicious and the service charming.','A predictable plot that lacks energy.','The room was fine but the food was mediocre.'];
+const BENCH_LEX={great:2,delicious:2,loved:2,excellent:2,wonderful:2,superb:2,charming:1.5,fun:1.5,good:1.2,tasty:1.5,bland:-1.5,boring:-1.5,greasy:-1.2,lacks:-1.5,terrible:-2,awful:-2,dull:-1.5,slow:-1,bad:-1.5,mediocre:-1.3,soggy:-1.4};
+const BENCH_SENTS=['The pasta was delicious and the service charming.','A slow kitchen and a bland risotto.','The room was fine but the food was mediocre.'];
 const BENCH_NLI=[
   {p:'A man is playing a guitar on stage.', h:'A person is making music.', y:[0.86,0.04,0.10], lab:'entailment'},
   {p:'A man is playing a guitar on stage.', h:'The man is asleep in bed.', y:[0.03,0.90,0.07], lab:'contradiction'},
@@ -36024,7 +36024,7 @@ function pmatCost(){
 }
 
 // ── 8.4 VIZ: TOKEN + POSITION ──────────────────────────────
-const IE_VOCAB = ['Janet','will','back','the','bill','can','vote','soon'];
+const IE_VOCAB = ['dog','bites','man','the','fox','sees','a','hound'];
 const IE_D = 8;
 let _ie = { mode:'learned', slots:[0,1,2], posOn:true };
 function _ieWordEmb(wi){ const v=[]; for(let d=0;d<IE_D;d++) v.push(Math.sin(wi*1.7+d*0.9)*0.8); return v; }
