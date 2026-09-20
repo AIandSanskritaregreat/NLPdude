@@ -27420,8 +27420,10 @@ function pclDraw(){
     const NC = 220;
     const cep = [];
     for(let n=0;n<NC;n++){
+      // every bin: the harmonic ripple is 3.84 bins wide, so sampling every
+      // other bin would fall below Nyquist and alias the pitch spike in two
       let s = 0;
-      for(let k=0;k<PCEP_NB;k+=2) s += pcepLogSpec(k)*Math.cos(Math.PI*n*(k+0.5)/PCEP_NB);
+      for(let k=0;k<PCEP_NB;k++) s += pcepLogSpec(k)*Math.cos(Math.PI*n*(k+0.5)/PCEP_NB);
       cep.push(s/PCEP_NB*2);
     }
     const mx = Math.max(...cep.slice(2).map(Math.abs));
@@ -27444,8 +27446,8 @@ function pclDraw(){
   const caps = [
     'The magnitude spectrum of one frame of a vowel. Two structures are superimposed: a rapid comb of harmonics spaced at the pitch, and a slow envelope with peaks at the formants. The dashed line traces the envelope alone.',
     'Taking logs compresses the vertical range, bringing the weak high-frequency detail into view alongside the strong low-frequency peaks. The two superimposed structures are now equally visible.',
-    'Now the trick: ignore what the axes mean and look at the shape. This is a wiggly line with a fast component and a slow component, which is to say, it has its own frequency content. About eight ripples per thousand plot samples come from the harmonics; four broad humps come from the formants.',
-    'Transforming the pseudo-signal separates the two rates. The slow envelope lands in the first few coefficients on the left; the fast harmonic comb produces the isolated spike on the right, at the quefrency matching the pitch period. Physically separate organs, now numerically separate coefficients.'
+    'Now the trick: ignore what the axes mean and look at the shape. This is a wiggly line with a fast component and a slow component, which is to say, it has its own frequency content. Roughly sixty-seven fast ripples span the plot, one for each harmonic of a 120 Hz voice crossing an 8 kHz range; four broad humps come from the formants.',
+    'Transforming the pseudo-signal separates the two rates. The slow envelope lands in the first few coefficients on the left; the fast harmonic comb produces the isolated spike on the right, at quefrency 133, which is 16000/120, the pitch period of this 120 Hz voice in samples. Physically separate organs, now numerically separate coefficients.'
   ];
   mtSet('pcl-cap', caps[_pcl]);
 }
@@ -27460,7 +27462,7 @@ function pcqDraw(){
   const cep = [];
   for(let n=0;n<NC;n++){
     let s = 0;
-    for(let k=0;k<PCEP_NB;k+=2) s += pcepLogSpec(k)*Math.cos(Math.PI*n*(k+0.5)/PCEP_NB);
+    for(let k=0;k<PCEP_NB;k++) s += pcepLogSpec(k)*Math.cos(Math.PI*n*(k+0.5)/PCEP_NB);
     cep.push(s/PCEP_NB*2);
   }
   const mx = Math.max(...cep.slice(2).map(Math.abs));
@@ -27481,7 +27483,7 @@ function pcqDraw(){
   // reconstructions
   const recon = (keepLow)=>{
     const out = [];
-    for(let k=0;k<PCEP_NB;k+=2){
+    for(let k=0;k<PCEP_NB;k++){
       let s = cep[0]/2;
       for(let n=1;n<NC;n++){
         if(keepLow ? n>=q : n<q) continue;
@@ -27508,7 +27510,9 @@ function pcqDraw(){
   drawR(hi, 212, 32, MTC.a2, 'HIGH SIDE REBUILT \u2192 the harmonic comb, pitch only');
   mtSet('pcq-cap', q <= 20
     ? 'Keeping the first ' + q + ' coefficients rebuilds a smooth envelope with the formant peaks intact and no trace of the harmonic ripple. This is what a phone recognizer wants: vowel identity without the speaker\u2019s pitch. The discarded high side, rebuilt separately below, is the pitch information.'
-    : 'With the cutoff this high, the harmonic comb is creeping back into the low side and the reconstruction is picking up ripple again. Twelve to thirteen coefficients is the usual choice because it captures the envelope while staying well clear of the pitch spike.');
+    : (q > 133
+      ? 'The cutoff has now swallowed the pitch spike at quefrency 133, so the harmonic comb is back in the low side and the reconstruction has its ripple again. The separation is gone. Twelve to thirteen coefficients is the usual choice because it captures the envelope while staying well clear of that spike.'
+      : 'With the cutoff this high the low side is picking up detail finer than a formant, though the pitch spike at quefrency 133 is still outside it. Twelve to thirteen coefficients is the usual choice because it captures the envelope while staying well clear of that spike.'));
 }
 
 /* ── Decorrelation ────────────────────────────────────────── */
@@ -28437,9 +28441,11 @@ function ttsRcDraw(){
 
   const snr = ttsSNR(sig, rec);
   const rate = (TTS_SR/TTS_N)*S*Math.log2(TTS_K)/1000;
+  const fell = enc.norms[S] <= enc.norms[0];
   mtSet('trc-cap',
-    '<b>' + S + '</b> of 8 stages. Residual norm for this frame fell from <b>' + enc.norms[0].toFixed(3) +
-    '</b> to <b>' + enc.norms[S].toFixed(3) + '</b>, a factor of ' + (enc.norms[0]/enc.norms[S]).toFixed(1) +
+    '<b>' + S + '</b> of 8 stages. Residual norm for this frame ' + (fell ? 'fell' : 'rose') + ' from <b>' + enc.norms[0].toFixed(3) +
+    '</b> to <b>' + enc.norms[S].toFixed(3) + '</b>, a factor of ' +
+    (fell ? (enc.norms[0]/enc.norms[S]).toFixed(1) : (enc.norms[S]/enc.norms[0]).toFixed(1) + ' the wrong way, which single frames are allowed to do') +
     '. Whole-signal SNR is <b>' + snr.toFixed(1) + ' dB</b> at <b>' + rate.toFixed(1) + ' kbps</b>. ' +
     'Codes so far: <b>' + enc.codes.slice(0,S).join(', ') + '</b>. Stored codewords: 8 \u00d7 64 = <b>512</b>; ' +
     'reachable combinations: <b>64^8 = 2^48</b>. Press play at one stage, then at eight.');
@@ -29520,9 +29526,9 @@ TTS_PAGES.ttsrvq = `
 <div class="lesson-math">\\[\\mathbf{z}_{q_t} = \\sum_{i=1}^{N_c} \\mathbf{e}^{(i)}_{q_{t,i}}, \\qquad \\mathbf{z}_t - \\mathbf{z}_{q_t} = \\mathbf{r}^{(N_c)}_t\\]</div>
 
 <h2 class="lesson-h2">Why the Error Falls</h2>
-<p class="lesson-p">Each stage selects the codeword nearest to what remains, and every codebook contains a vector that reduces the residual, so the norm cannot increase:</p>
-<div class="lesson-math">\\[\\big\\|\\mathbf{r}^{(i)}_t\\big\\| \\le \\big\\|\\mathbf{r}^{(i-1)}_t\\big\\|\\]</div>
-<p class="lesson-p">In practice the decay is close to geometric, \\(\\|\\mathbf{r}^{(i)}\\| \\approx \\rho^{i}\\|\\mathbf{z}\\|\\) with \\(\\rho &lt; 1\\). The capacity this reaches is the part worth pausing on:</p>
+<p class="lesson-p">Each stage fits its codebook by k-means to the distribution of residuals the previous stage left behind, so what falls stage by stage is the <em>mean</em> squared residual, taken over the training distribution:</p>
+<div class="lesson-math">\\[\\mathbb{E}\\big[\\|\\mathbf{r}^{(i)}\\|^2\\big] \\;\\le\\; \\mathbb{E}\\big[\\|\\mathbf{r}^{(i-1)}\\|^2\\big]\\]</div>
+<p class="lesson-p">It is worth being precise that this is an expectation and not a promise about every vector. For one particular \\(\\mathbf{r}^{(i-1)}_t\\), the nearest codeword can sit further from it than the origin does, and then the norm goes <em>up</em>. That happens when a residual is already far smaller than the typical codeword the stage was fitted to, so every entry in the book overshoots it. The codec running in this page does exactly this on about one stage transition in forty; adding the zero vector to every codebook would buy back the per-vector guarantee at the cost of one wasted index. In practice the decay of the average is close to geometric, \\(\\|\\mathbf{r}^{(i)}\\| \\approx \\rho^{i}\\|\\mathbf{z}\\|\\) with \\(\\rho &lt; 1\\). The capacity this reaches is the part worth pausing on:</p>
 <div class="lesson-math">\\[K^{N_c} = 1024^{8} = 2^{80} \\quad \\text{reachable states, from} \\quad N_c K = 8192 \\text{ stored vectors}\\]</div>
 <p class="lesson-p">Eight thousand vectors in memory addressing eighty bits of distinguishable states. A single codebook with that reach would need \\(2^{80}\\) entries, which is why the previous section's exponent stopped being an obstacle: the dimension did not change, but the number of codewords needed at each stage did.</p>
 <div class="lesson-math">\\[B = 75 \\times 8 \\times 10 = 6000 \\text{ bits/s} = 6\\ \\mathrm{kbps}\\]</div>
