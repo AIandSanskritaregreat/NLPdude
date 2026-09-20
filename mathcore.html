@@ -6504,7 +6504,7 @@ LR_PAGES.lreval = `
 ${lrFig('Interactive \u00b7 Confusion matrix with a movable threshold', 'lr-conf', null, 1)}
 
 ${lrH3('4.9.1', 'Micro versus Macro Averaging')}
-<p class="lesson-p">With more than two classes, there are two ways to average a metric across them, and they answer different questions. <strong>Micro-averaging</strong> pools every decision into one confusion matrix, so a class with many examples dominates. <strong>Macro-averaging</strong> computes the metric per class and then averages those, giving every class an equal weight regardless of size. Toggle between them on a three-class email problem: the dominant spam class controls the micro number, while the macro number gives the small classes equal weight.</p>
+<p class="lesson-p">With more than two classes, there are two ways to average a metric across them, and they answer different questions. <strong>Micro-averaging</strong> pools every decision into one confusion matrix, so a class with many examples dominates. <strong>Macro-averaging</strong> computes the metric per class and then averages those, giving every class an equal weight regardless of size. Toggle between them on a three-class camera-trap problem, where the overwhelming majority of frames catch nothing at all: the dominant empty class controls the micro number, while the macro number gives the two rare animal classes equal weight.</p>
 ${lrFig('Interactive \u00b7 Micro versus macro on three classes', 'lr-avg')}
 
 <div class="quiz-block" id="qlr9"><div style="font-family:var(--mono);font-size:.65rem;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:1rem">Quick Check</div>
@@ -7979,9 +7979,9 @@ function lrStat(k,v,col){ return '<span class="lr-stat"><span class="lr-stat-k">
 // ───────────────────────────────────────────────────────────
 let _lrAvg = { mode:'macro' };
 const AVG_DATA = {
-  urgent: { tp:8, fp:3, fn:4 },
-  normal: { tp:12, fp:6, fn:5 },
-  spam:   { tp:180, fp:12, fn:8 }
+  lynx:  { tp:8, fp:3, fn:4 },
+  deer:  { tp:12, fp:6, fn:5 },
+  empty: { tp:180, fp:12, fn:8 }
 };
 function lrAvgInit(){
   _lrAvg={mode:'macro'};
@@ -8003,11 +8003,11 @@ function lrAvgRender(){
   if(_lrAvg.mode==='macro'){ result=perF1.reduce((a,b)=>a+b,0)/cls.length; }
   else { let tp=0,fp=0,fn=0; cls.forEach(c=>{tp+=AVG_DATA[c].tp;fp+=AVG_DATA[c].fp;fn+=AVG_DATA[c].fn;}); const p=tp/(tp+fp),r=tp/(tp+fn); result=2*p*r/(p+r); }
   host.innerHTML='<table class="lr-table"><tr><th>class</th><th>support</th><th>F1</th></tr>'+
-    cls.map((c,i)=>{ const d=AVG_DATA[c]; const dom=c==='spam'; return '<tr><td style="color:'+(dom?LRC.amb:'var(--text)')+'">'+c+(dom?' (dominant)':'')+'</td><td>'+(d.tp+d.fn)+'</td><td>'+perF1[i].toFixed(3)+'</td></tr>'; }).join('')+'</table>'+
+    cls.map((c,i)=>{ const d=AVG_DATA[c]; const dom=c==='empty'; return '<tr><td style="color:'+(dom?LRC.amb:'var(--text)')+'">'+c+(dom?' (dominant)':'')+'</td><td>'+(d.tp+d.fn)+'</td><td>'+perF1[i].toFixed(3)+'</td></tr>'; }).join('')+'</table>'+
     '<div class="lr-readout" style="margin-top:.9rem;justify-content:center">'+lrStat(_lrAvg.mode+' F1',result.toFixed(3),_lrAvg.mode==='micro'?LRC.amb:LRC.acc)+'</div>'+
     '<div class="lr-note" style="text-align:center">'+(_lrAvg.mode==='micro'
-      ? 'Micro pools every decision, so the huge <b>spam</b> class dominates and the score looks great while the small classes are ignored.'
-      : 'Macro averages the per-class F1 equally, so the weak <b>urgent</b> and <b>normal</b> classes drag the number down where it belongs.')+'</div>';
+      ? 'Micro pools every decision, so the huge <b>empty</b> class dominates and the score looks great while the two animal classes are ignored.'
+      : 'Macro averages the per-class F1 equally, so the weak <b>lynx</b> and <b>deer</b> classes drag the number down where it belongs.')+'</div>';
 }
 
 // ───────────────────────────────────────────────────────────
@@ -17358,7 +17358,7 @@ IR_PAGES.bow = `
 IR_PAGES.tfidf = `
 <div class="lesson-chapter-label">Section 11.1.2</div>
 <h1 class="lesson-h1">Weighting Terms: tf-idf and BM25</h1>
-<p class="lesson-intro">Raw counts are a poor weighting. They treat a word appearing 100 times as a hundred times more important than a word appearing once, and they treat <em>the</em>, which appears in every document, as equally informative as <em>Romeo</em>, which appears in one. The tf-idf weighting fixes both problems with two multiplied factors, one about the document and one about the collection.</p>
+<p class="lesson-intro">Raw counts are a poor weighting. They treat a word appearing 100 times as a hundred times more important than a word appearing once, and they treat <em>the</em>, which appears in every document, as equally informative as <em>crampon</em>, which appears in one. The tf-idf weighting fixes both problems with two multiplied factors, one about the document and one about the collection.</p>
 
 <h2 class="lesson-h2">Damping the Term Frequency</h2>
 <p class="lesson-p">A document that mentions a word twenty times is more about that word than one mentioning it twice, but not ten times more. The relationship should be increasing and strongly compressed, which is what a logarithm provides:</p>
@@ -17368,16 +17368,16 @@ IR_PAGES.tfidf = `
 <h2 class="lesson-h2">Penalizing Common Words</h2>
 <p class="lesson-p">The second factor asks how many documents in the collection contain the term at all. Let df<sub>t</sub> be that <strong>document frequency</strong> and N the collection size. The <strong>inverse document frequency</strong> is</p>
 <div class="lesson-math" id="ir-idf">\\[\\mathrm{idf}_t = \\log_{10}\\!\\left(\\frac{N}{\\mathrm{df}_t}\\right)\\]</div>
-<p class="lesson-p">A term occurring in every document has df = N, so idf = log 1 = 0, and its weight vanishes entirely no matter how often it occurs. A term in one document out of 37 has idf = log(37) &asymp; 1.57. Note that idf uses document frequency, not total count: a word that appears fifty times but all within a single document is still rare in the collection sense, and should still discriminate. The final weight multiplies the two factors:</p>
+<p class="lesson-p">A term occurring in every document has df = N, so idf = log 1 = 0, and its weight vanishes entirely no matter how often it occurs. Take a collection of 48 route guides: a term appearing in just one of them has idf = log(48) &asymp; 1.68. Note that idf uses document frequency, not total count: a word that appears fifty times but all within a single document is still rare in the collection sense, and should still discriminate. The final weight multiplies the two factors:</p>
 <div class="lesson-math" id="ir-tfidf">\\[w_{t,d} = \\mathrm{tf}_{t,d} \\times \\mathrm{idf}_t\\]</div>
-<p class="lesson-p">Move the two sliders below. The left panel compares raw counts against the damped tf; the right shows words as points whose height is their idf, dropping to the floor as document frequency rises.</p>
+<p class="lesson-p">Move the two sliders below. The left panel compares raw counts against the damped tf; the right shows six words from those 48 guides as points whose height is their idf, dropping to the floor as document frequency rises.</p>
 
 <div class="viz-container">
   <div class="viz-header"><span class="viz-label">Interactive &middot; The Two Factors</span></div>
   <div class="viz-body">
     <div style="display:flex;gap:18px;flex-wrap:wrap;margin-bottom:1rem">
       <label style="font-family:var(--mono);font-size:.7rem;color:var(--accent);flex:1;min-width:200px">raw count of the term <input id="tfd-tf" type="range" min="1" max="1000" step="1" value="10" oninput="tfdSet()" style="width:100%;accent-color:var(--accent)"> <span id="tfd-tfv">10</span></label>
-      <label style="font-family:var(--mono);font-size:.7rem;color:var(--accent3);flex:1;min-width:200px">document frequency (of 37) <input id="tfd-df" type="range" min="1" max="37" step="1" value="1" oninput="tfdSet()" style="width:100%;accent-color:var(--accent3)"> <span id="tfd-dfv">1</span></label>
+      <label style="font-family:var(--mono);font-size:.7rem;color:var(--accent3);flex:1;min-width:200px">document frequency (of 48 guides) <input id="tfd-df" type="range" min="1" max="48" step="1" value="1" oninput="tfdSet()" style="width:100%;accent-color:var(--accent3)"> <span id="tfd-dfv">1</span></label>
     </div>
     <canvas id="tfd-canvas" width="640" height="250" style="width:100%;max-width:640px;display:block;margin:0 auto"></canvas>
     <div id="tfd-caption" style="font-family:var(--mono);font-size:.66rem;color:var(--muted);margin-top:.9rem;line-height:1.7;min-height:2.6rem"></div>
@@ -34525,7 +34525,7 @@ function tdmDraw(){
 function tfdSet(){
   const tfEl=document.getElementById('tfd-tf'), dfEl=document.getElementById('tfd-df');
   if(!tfEl||!dfEl) return;
-  const cnt=parseInt(tfEl.value), df=parseInt(dfEl.value), N=37;
+  const cnt=parseInt(tfEl.value), df=parseInt(dfEl.value), N=48;
   const a=document.getElementById('tfd-tfv'); if(a) a.textContent=cnt;
   const b=document.getElementById('tfd-dfv'); if(b) b.textContent=df;
   const tf=1+Math.log10(cnt), idf=Math.log10(N/df);
@@ -34564,13 +34564,13 @@ function tfdSet(){
   ctx.beginPath(); ctx.moveTo(300,14); ctx.lineTo(300,H-14); ctx.stroke();
   // RIGHT: idf balloons
   ctx.fillStyle='rgba(255,255,255,0.45)'; ctx.font='9px monospace'; ctx.textAlign='left';
-  ctx.fillText('idf = log\u2081\u2080(37 / df)',320,18);
-  const words=[['Romeo',1],['salad',2],['Falstaff',4],['fool',12],['good',37],['sweet',37]];
+  ctx.fillText('idf = log\u2081\u2080(' + N + ' / df)',320,18);
+  const words=[['crampon',1],['moraine',3],['bivouac',6],['cairn',16],['route',N],['trail',N]];
   const floor=H-46;
   words.forEach(([w,d],i)=>{
     const x=340+i*48;
-    const v=Math.log10(37/d);
-    const y=floor-(v/1.6)*(floor-38);
+    const v=Math.log10(N/d);
+    const y=floor-(v/Math.log10(N))*(floor-38);
     ctx.strokeStyle='rgba(255,255,255,0.1)';
     ctx.beginPath(); ctx.moveTo(x,floor); ctx.lineTo(x,y); ctx.stroke();
     ctx.fillStyle=v<0.05?'rgba(255,95,142,0.7)':'rgba(160,140,255,0.7)';
@@ -34585,8 +34585,8 @@ function tfdSet(){
   ctx.fillStyle='rgba(255,95,142,0.6)'; ctx.font='7px monospace'; ctx.textAlign='right';
   ctx.fillText('idf = 0: no discriminating power',W-16,floor+22);
   const cap=document.getElementById('tfd-caption');
-  if(cap) cap.innerHTML='count = '+cnt+' \u2192 tf = 1 + log\u2081\u2080('+cnt+') = <b style="color:var(--accent)">'+tf.toFixed(3)+'</b>; df = '+df+' \u2192 idf = log\u2081\u2080(37/'+df+') = <b style="color:var(--accent3)">'+idf.toFixed(3)+'</b>; the weight is their product, <b>'+(tf*idf).toFixed(3)+'</b>. '
-    +(df===37?'At df = N the idf is exactly zero, so this term contributes nothing however often it occurs.':'A thousandfold change in raw count moves tf by only 3, while moving df from 1 to 37 drives idf all the way to zero.');
+  if(cap) cap.innerHTML='count = '+cnt+' \u2192 tf = 1 + log\u2081\u2080('+cnt+') = <b style="color:var(--accent)">'+tf.toFixed(3)+'</b>; df = '+df+' \u2192 idf = log\u2081\u2080('+N+'/'+df+') = <b style="color:var(--accent3)">'+idf.toFixed(3)+'</b>; the weight is their product, <b>'+(tf*idf).toFixed(3)+'</b>. '
+    +(df===N?'At df = N the idf is exactly zero, so this term contributes nothing however often it occurs.':'A thousandfold change in raw count moves tf by only 3, while moving df from 1 to '+N+' drives idf all the way to zero.');
 }
 
 // ── 11.1.2 VIZ: BM25 ───────────────────────────────────────
@@ -34639,8 +34639,11 @@ function bm25Set(){
   if(cap){
     let t='';
     if(k<0.15) t='k near 0: the term-frequency fraction is close to 1 whenever the term appears at all, so BM25 has collapsed into presence-or-absence matching and the counts no longer affect the ranking.';
-    else if(k>4) t='Large k: saturation is weak, so raw counts matter almost linearly and the long document D2, which simply contains more of everything, climbs.';
-    else if(b<0.15) t='b near 0: length normalization is off. D2 is 900 tokens long and wins largely because more text means more occurrences, which is the bias b exists to correct.';
+    else if(k>4){
+      const d2=scored.find(d=>d.id==='D2'), pos=scored.findIndex(d=>d.id==='D2')+1;
+      t='Large k: saturation is weak, so a second occurrence of a term counts nearly as much as the first and the scores track raw counts closely. The ranking barely moves, though. Once b is above about 0.5 the length penalty on the 900-token D2 grows in proportion to k, so raising k pushes the long document further down rather than lifting it \u2014 D2 is at '+((d2.score/scored[0].score)*100).toFixed(0)+'% of the top score here, ranked #'+pos+'. In this collection b is the knob that reorders results; k mostly changes the spacing between them.';
+    }
+    else if(b<0.15) t='b near 0: length normalization is off. D2 is 900 tokens long and wins largely because more text means more occurrences, which is the bias b exists to correct. It keeps that lead until b passes about 0.54, and drops to third once b clears 0.69.';
     else if(b>0.9) t='b near 1: term frequency is fully divided by relative document length, so short focused documents are favored strongly.';
     else t='With k = '+k.toFixed(2)+' and b = '+b.toFixed(2)+' the ranking balances how often a term occurs against how long the document is. Values near k = 1.2 to 2 and b = 0.75 are the usual defaults.';
     cap.textContent=t;
@@ -34648,21 +34651,21 @@ function bm25Set(){
 }
 
 // ── 11.1.2 VIZ: STOP LIST ──────────────────────────────────
-const SHRED_STOP=['to','be','or','the','a','of','and','in','is','it','that'];
+const SHRED_STOP=['a','about','and','are','as','at','be','but','by','do','for','in','is','it','of','on','or','that','the','this','to','was','what','with'];
 function shredReset(){
   const o=document.getElementById('shred-out');
-  if(o) o.innerHTML='to be or not to be'.split(' ').map(w=>'<span style="color:#ECF1FF;margin:0 .3rem">'+w+'</span>').join('');
+  if(o) o.innerHTML='what to do about it'.split(' ').map(w=>'<span style="color:#ECF1FF;margin:0 .3rem">'+w+'</span>').join('');
   const c=document.getElementById('shred-caption');
-  if(c) c.textContent='A six-word query. Press the button to remove every term on a standard stop list.';
+  if(c) c.textContent='A five-word query. Press the button to remove every term on a standard stop list.';
 }
 function shredGo(){
   const o=document.getElementById('shred-out');
-  const words='to be or not to be'.split(' ');
+  const words='what to do about it'.split(' ');
   if(o) o.innerHTML=words.map(w=>SHRED_STOP.includes(w)
     ? '<span style="color:rgba(255,255,255,0.15);text-decoration:line-through;margin:0 .3rem">'+w+'</span>'
     : '<span style="color:#3DDC84;font-weight:700;margin:0 .3rem">'+w+'</span>').join('');
   const c=document.getElementById('shred-caption');
-  if(c) c.innerHTML='Five of six words removed; the query is now the single word <b>not</b>. With idf weighting these terms would already carry weights near zero without deleting anything, and the deleted information would still be available if it happened to matter.';
+  if(c) c.innerHTML='All five words removed: <b>the query is now empty</b> and there is nothing left to retrieve on. With idf weighting every one of these terms would already carry a weight near zero without being deleted, and on the rare occasion one of them does matter \u2014 a title, a quoted phrase \u2014 it is still there to be used.';
 }
 
 // ── 11.1.3 VIZ: COSINE ─────────────────────────────────────
