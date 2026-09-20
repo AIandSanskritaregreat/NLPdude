@@ -10696,7 +10696,7 @@ ${nnFig('Interactive \u00b7 A computation graph, forward', 'nn-graph')}
 
 ${lrH3('6.6.4', 'Backpropagation: Sending the Error Backward', 'flagship')}
 <p class="lesson-p">Here is the mechanism, and it is what makes the chain rule practical. After the forward pass, we run the <em>same</em> graph in reverse to compute how the loss depends on every input. Each node receives an <strong>upstream gradient</strong>, which is how much the loss depends on this node's output, multiplies it by its own <strong>local gradient</strong>, which is how much this node's output depends on its input, and passes the result <strong>downstream</strong> to its parents. That multiply-and-pass step is the chain rule, and doing it node by node through the graph is backpropagation.</p>
-<p class="lesson-p">Press "backprop" below and follow the gradients right to left. Each node shows its local gradient as a label; check the numbers against the worked example, \\(\\partial L/\\partial a = -2\\), \\(\\partial L/\\partial b = -4\\), \\(\\partial L/\\partial c = 5\\). Then press "level up" to swap in the real two-layer network graph and watch the same backward pass compute \\(\\partial L/\\partial z = a^{(2)} - y\\), the same error-times-feature gradient from logistic regression, now produced by the graph rather than derived by hand. Stepping through each multiplication in both directions on one structure is the most direct way to see what backprop is doing.</p>
+<p class="lesson-p">Press "backprop" below and follow the gradients right to left. Each node shows its local gradient as a label; check the numbers against the worked example, which at the default \\(a=3\\), \\(b=1\\), \\(c=-2\\) gives \\(\\partial L/\\partial a = -2\\), \\(\\partial L/\\partial b = -4\\), \\(\\partial L/\\partial c = 5\\). The sliders in 6.6.3 drive this graph too, so moving them updates every gradient here. Then press "level up" to swap in the real two-layer network graph and watch the same backward pass compute \\(\\partial L/\\partial z = a^{(2)} - y\\), the same error-times-feature gradient from logistic regression, now produced by the graph rather than derived by hand. Stepping through each multiplication in both directions on one structure is the most direct way to see what backprop is doing.</p>
 ${nnFig('Interactive \u00b7 Backpropagation, the reverse pass', 'nn-backprop', 'flagship', 1)}
 
 ${lrH3('6.6.5', 'Practical Training: Initialization, Dropout, Hyperparameters')}
@@ -11412,7 +11412,7 @@ function nnGraphInit(){
   ['a','b','c'].forEach(k=>{ const el=lrEl('nn-g-'+k); if(el) el.addEventListener('input',()=>nnGraphUpd()); });
   nnGraphDraw();
 }
-function nnGraphUpd(){ _nnGraph.a=+lrEl('nn-g-a').value; _nnGraph.b=+lrEl('nn-g-b').value; _nnGraph.c=+lrEl('nn-g-c').value; lrTxt('nn-g-a-v',_nnGraph.a.toFixed(0)); lrTxt('nn-g-b-v',_nnGraph.b.toFixed(0)); lrTxt('nn-g-c-v',_nnGraph.c.toFixed(0)); nnGraphDraw(); }
+function nnGraphUpd(){ _nnGraph.a=+lrEl('nn-g-a').value; _nnGraph.b=+lrEl('nn-g-b').value; _nnGraph.c=+lrEl('nn-g-c').value; lrTxt('nn-g-a-v',_nnGraph.a.toFixed(0)); lrTxt('nn-g-b-v',_nnGraph.b.toFixed(0)); lrTxt('nn-g-c-v',_nnGraph.c.toFixed(0)); nnGraphDraw(); if(lrEl('nn-bp-cv') && !_nnBp.net2) nnBpDraw(); }
 function nnGraphNodes(){
   const {a,b,c}=_nnGraph; const d=2*b; const e=a+d; const L=c*e;
   return { a,b,c,d,e,L };
@@ -11463,20 +11463,22 @@ function nnBpStep(){
   nnBpDraw();
   if(_nnBp.revealed>=maxSteps){ lrSet('nn-bp-note', _nnBp.net2
     ? '<b style="color:'+LRC.grn+'">Complete.</b> The output-layer gradient is \u2202L/\u2202z = a\u207d\u00b2\u207e \u2212 y. Backprop carried the chain rule to every weight automatically.'
-    : '<b style="color:'+LRC.grn+'">Complete.</b> \u2202L/\u2202a = \u22122, \u2202L/\u2202b = \u22124, \u2202L/\u2202c = 5. Each was upstream \u00d7 local gradient \u2014 the chain rule as a relay.'); }
+    : (()=>{ const N=nnGraphNodes(), n=v=>(v<0?'\u2212'+Math.abs(v):''+v);
+        return '<b style="color:'+LRC.grn+'">Complete.</b> \u2202L/\u2202a = '+n(N.c)+', \u2202L/\u2202b = '+n(2*N.c)+', \u2202L/\u2202c = '+n(N.e)+'. Each was upstream \u00d7 local gradient \u2014 the chain rule as a relay. Move the sliders in 6.6.3 and these follow.'; })()); }
 }
 function nnBpDraw(){
   if(_nnBp.net2){ nnBpDrawNet2(); return; }
   const c=lrCanvas('nn-bp-cv',260); if(!c) return;
   const {ctx,W,H}=c;
-  // same graph as 6.6.3 with a=3,b=1,c=-2
-  const a=3,b=1,c3=-2,d=2,e=a+2*b,L=c3*e;
+  // the very graph 6.6.3 is showing, read from the same state and differentiated
+  const N=nnGraphNodes(), a=N.a, b=N.b, c3=N.c, d=N.d, e=N.e, L=N.L;
+  const neg=v=>(v<0?'\u2212'+Math.abs(v):''+v);
   const nodes=[
-    {id:'a',lab:'a',val:a,x:W*0.1,y:H*0.22,col:LRC.acc,grad:-2,loc:'\u2202e/\u2202a=1'},
-    {id:'b',lab:'b',val:b,x:W*0.1,y:H*0.72,col:LRC.pur,grad:-4,loc:'\u2202d/\u2202b=2'},
-    {id:'c',lab:'c',val:c3,x:W*0.1,y:H*0.47,col:LRC.grn,grad:e,loc:'\u2202L/\u2202c=e=5'},
-    {id:'d',lab:'\u00d72',val:2*b,x:W*0.38,y:H*0.72,col:LRC.muted,grad:-2,loc:'\u2202e/\u2202d=1'},
-    {id:'e',lab:'+',val:e,x:W*0.62,y:H*0.42,col:LRC.muted,grad:c3,loc:'\u2202L/\u2202e=c=\u22122'},
+    {id:'a',lab:'a',val:a,x:W*0.1,y:H*0.22,col:LRC.acc,grad:c3,loc:'\u2202e/\u2202a=1'},
+    {id:'b',lab:'b',val:b,x:W*0.1,y:H*0.72,col:LRC.pur,grad:2*c3,loc:'\u2202d/\u2202b=2'},
+    {id:'c',lab:'c',val:c3,x:W*0.1,y:H*0.47,col:LRC.grn,grad:e,loc:'\u2202L/\u2202c=e='+neg(e)},
+    {id:'d',lab:'\u00d72',val:d,x:W*0.38,y:H*0.72,col:LRC.muted,grad:c3,loc:'\u2202e/\u2202d=1'},
+    {id:'e',lab:'+',val:e,x:W*0.62,y:H*0.42,col:LRC.muted,grad:c3,loc:'\u2202L/\u2202e=c='+neg(c3)},
     {id:'L',lab:'\u00d7',val:L,x:W*0.87,y:H*0.47,col:LRC.red,grad:1,loc:'seed=1'}
   ];
   const NB={}; nodes.forEach(n=>NB[n.id]=n);
@@ -11506,7 +11508,6 @@ function nnBpDrawNet2(){
   ];
   const NB={}; nodes.forEach(n=>NB[n.id]=n);
   const wlabels={'x-h':'W\u00b9','h-z':'W\u00b2','z-a':'softmax','a-L':'cross-ent'};
-  const seq=[['h','z'],['x','h']]; // placeholder
   const order=['L','a','z','h']; // reveal right to left
   for(let i=0;i<nodes.length-1;i++){ const f=nodes[i],t=nodes[i+1]; ctx.strokeStyle='rgba(214,226,255,0.2)'; ctx.lineWidth=1.5; ctx.beginPath(); ctx.moveTo(f.x+18,f.y); ctx.lineTo(t.x-18,t.y); ctx.stroke(); ctx.fillStyle=LRC.muted; ctx.font='8px IBM Plex Mono, monospace'; ctx.textAlign='center'; ctx.fillText(wlabels[f.id+'-'+t.id]||'',(f.x+t.x)/2,f.y-8); }
   // backward arrows revealed
