@@ -35492,6 +35492,7 @@ function dslDraw(){
 
 // ── 11.6 VIZ: GRADING ──────────────────────────────────────
 const GRADE_PRESETS=[
+  ['the Treaty of Versailles','the Treaty of Versailles 1919','right, but more specific'],
   ['Paris','Paris, France','extra qualifier'],
   ['Paris','paris','case and punctuation only'],
   ['the Ninth Circuit','Ninth Circuit','dropped article'],
@@ -35567,7 +35568,7 @@ function gradeDraw(){
   if(cap){
     let t='EM = '+em+', F1 = '+F.toFixed(3)+'. ';
     if(em===0&&F>0.85&&gt.length!==pt.length) t+='The prediction is correct and slightly more specific than the gold answer, but exact match scores it zero. This is exact match&rsquo;s characteristic failure: no partial credit.';
-    else if(em===1) t+='Both metrics agree. Normalization removed the case and punctuation differences before comparing.';
+    else if(em===1) t+='Both metrics agree. Normalization folded away the surface differences \u2014 case, punctuation and a leading article \u2014 before either metric saw the strings.';
     else if(F>0.8&&gt.length===pt.length&&gold!==pred) t+='Every gold token appears in the prediction, so token F1 is high, but the words have been rearranged into a statement that says something different. F1 compares bags of tokens and cannot see order, exactly as in Section 11.1.1. This is the case that shows F1 is not a measure of correctness.';
     else if(F<0.2) t+='The prediction shares almost nothing with the gold answer, and both metrics agree that it is wrong.';
     else t+='Partial overlap: exact match gives nothing while F1 awards credit proportional to the shared tokens.';
