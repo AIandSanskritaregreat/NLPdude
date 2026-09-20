@@ -13887,6 +13887,7 @@ TX_PAGES.attn = `
 
 <h2 class="lesson-h2">The Problem: Meaning Depends on Context</h2>
 <p class="lesson-p">Read these two sentences: <em>The ladder did not reach the window because it was too short</em>, and <em>The ladder did not reach the window because it was too high</em>. The word <em>it</em> points to the ladder in the first and the window in the second. Nothing in the first eight words differs; only the final adjective decides. To represent <em>it</em> correctly, the model must look back and pull meaning from the right earlier word. Attention is how it does that: when building the representation for <em>it</em>, the model attends most strongly to <em>ladder</em> and <em>window</em>, the two candidates it might be referring to.</p>
+<p class="lesson-p">Where the choice between those two candidates gets made is worth being careful about. A decoder masks the future, so the token <em>it</em> is built from the words before it and cannot consult the adjective that has not arrived; at that position the two candidates are genuinely tied, and the model is right to be undecided. It is the adjective itself, once it becomes the query, that can look back across the whole sentence and pick one. The instrument below lets you stand at either position and see the difference.</p>
 
 <h2 class="lesson-h2">Attention as a Weighted Sum</h2>
 <p class="lesson-p">Attention is a weighted sum of the earlier tokens. The output for token <em>i</em> is a blend of all the tokens up to and including <em>i</em>, where the weight on each token says how much it should contribute.</p>
@@ -35759,13 +35760,17 @@ function openTXSec(id){
 // ── 8.1 VIZ: SELF-ATTENTION ────────────────────────────────
 const ATTN_BASE_TOK = ['The','ladder','did','not','reach','the','window','because'];
 const ATTN_BASE_VEC = [[0.1,0.1,0.2,0.6],[2,0,0,0.3],[0,0,0.9,0.3],[0,0,0.8,0.4],[0.1,0.1,1.0,0.1],[0.1,0.1,0.2,0.6],[0,2,0,0.3],[0,0,0.5,0.5]];
+/* "it" is the same vector in every mode: at its own position a causal model
+   cannot see the adjective that follows, so its attention must not depend on
+   which ending is selected. The resolution shows up at the adjective instead. */
+const ATTN_IT = [1.0,1.0,0,0.2];
 const ATTN_MODES = {
-  short: { it:[1.8,0.25,0,0.2], tail:[['was',[0,0,0.6,0.5]],['too',[0,0,0.4,0.6]],['short',[1.2,0.1,0.3,0.2]]] },
-  high:  { it:[0.25,1.8,0,0.2], tail:[['was',[0,0,0.6,0.5]],['too',[0,0,0.4,0.6]],['high',[0.1,1.2,0.3,0.2]]] },
-  open:  { it:[1.0,1.0,0,0.2],  tail:[] }
+  short: { it:ATTN_IT, tail:[['was',[0,0,0.6,0.5]],['too',[0,0,0.4,0.6]],['short',[1.2,0.1,0.3,0.2]]] },
+  high:  { it:ATTN_IT, tail:[['was',[0,0,0.6,0.5]],['too',[0,0,0.4,0.6]],['high',[0.1,1.2,0.3,0.2]]] },
+  open:  { it:ATTN_IT, tail:[] }
 };
 let ATTN_TOKENS = [], ATTN_VEC = [];
-let _attn = { q:8, ctx:'short', anim:null };
+let _attn = { q:11, ctx:'short', anim:null };
 function attnSetContext(ctx){
   _attn.ctx = ctx;
   const m = ATTN_MODES[ctx];
@@ -35774,7 +35779,7 @@ function attnSetContext(ctx){
   document.querySelectorAll('.attn-ctx-btn').forEach(b=>{ const on=b.dataset.ctx===ctx; b.style.background=on?'var(--accent)':'var(--surface2)'; b.style.color=on?'var(--bg)':'var(--muted)'; b.style.borderColor=on?'var(--accent)':'var(--border2)'; });
   const t=document.getElementById('attn-tokens');
   if(t) t.innerHTML=ATTN_TOKENS.map((w,i)=>'<button class="attn-tok" data-i="'+i+'" onclick="attnSetQuery('+i+')" style="background:var(--surface2);color:var(--muted);border:1px solid var(--border2);border-radius:7px;padding:.4rem .7rem;font-family:var(--mono);font-size:.74rem;cursor:pointer">'+w+'</button>').join('');
-  attnSetQuery(8);
+  attnSetQuery(ATTN_TOKENS.length-1);
 }
 function attnBuild(){
   const t=document.getElementById('attn-tokens'); if(!t) return;
@@ -35809,6 +35814,8 @@ function attnDraw(){
   // find top for caption
   let topj=0,topv=0;
   for(let j=0;j<=qi;j++){ if(dist[j]>topv){ topv=dist[j]; topj=j; } }
+  // a genuine tie has no single winner; mark every key within half a point of the max
+  const tied=[]; for(let j=0;j<=qi;j++) if(dist[j] > topv-0.005) tied.push(j);
 
   // ── curved attention links with flowing particles (behind nodes) ──
   for(let j=0;j<=qi;j++){
@@ -35851,7 +35858,7 @@ function attnDraw(){
   // ── token row ──
   for(let j=0;j<n;j++){
     const x=pad+j*bw+bw/2, allowed=j<=qi, a=allowed?dist[j]:0;
-    const isTop=allowed&&j===topj&&a>0.05;
+    const isTop=allowed&&tied.indexOf(j)>=0&&a>0.05;
     if(allowed && a>0.12){ ctx.shadowBlur=10*a; ctx.shadowColor=`rgba(77,227,255,${a*0.7})`; } else ctx.shadowBlur=0;
     const tg=ctx.createLinearGradient(0,yTok-13,0,yTok+13);
     if(j===qi){ tg.addColorStop(0,'rgba(255,95,142,0.4)'); tg.addColorStop(1,'rgba(255,95,142,0.18)'); }
@@ -35871,11 +35878,13 @@ function attnDraw(){
   ctx.textAlign='left';
   const cap=document.getElementById('attn-caption');
   if(cap){
-    if(qi===8 && ATTN_TOKENS[8]==='it'){
-      if(_attn.ctx==='short') cap.innerHTML='&ldquo;&hellip;too <b>short</b>&rdquo;: the beam from &ldquo;<span style="color:var(--accent3)">it</span>&rdquo; swings to <span style="color:var(--accent)">ladder</span> \u2014 ladders are too short, windows are not. Its contextual vector becomes ladder-flavored.';
-      else if(_attn.ctx==='high') cap.innerHTML='&ldquo;&hellip;too <b>high</b>&rdquo;: the very same &ldquo;<span style="color:var(--accent3)">it</span>&rdquo; now aims its beam at <span style="color:var(--accent)">window</span>. Flip the ending above and watch the beams physically re-aim.';
-      else cap.innerHTML='Nothing after &ldquo;<span style="color:var(--accent3)">it</span>&rdquo; yet: attention genuinely splits between <span style="color:var(--accent)">ladder</span> and <span style="color:var(--accent)">window</span>, because the model does not know yet either. The disambiguating word has not arrived.';
+    const isLast = qi===ATTN_TOKENS.length-1;
+    if(ATTN_TOKENS[qi]==='it'){
+      cap.innerHTML='&ldquo;<span style="color:var(--accent3)">it</span>&rdquo; is at position 8, and the mask lets it see only positions 0 to 8. Its beam splits evenly between <span style="color:var(--accent)">ladder</span> and <span style="color:var(--accent)">window</span> \u2014 '+(dist[1]*100).toFixed(1)+'% each \u2014 and it splits the same way whichever ending you pick above, because a causal model genuinely cannot read ahead. '+(_attn.ctx==='open' ? 'Here nothing follows it at all.' : 'Click the last word to see where the ambiguity is actually settled.');
     }
+    else if(isLast && _attn.ctx==='short') cap.innerHTML='&ldquo;<span style="color:var(--accent3)">short</span>&rdquo; is the word that settles it, and being last it can look back over the whole sentence. Its beam lands on <span style="color:var(--accent)">ladder</span> ('+(dist[1]*100).toFixed(0)+'%) rather than window ('+(dist[6]*100).toFixed(0)+'%): ladders are too short, windows are not.';
+    else if(isLast && _attn.ctx==='high') cap.innerHTML='&ldquo;<span style="color:var(--accent3)">high</span>&rdquo; re-aims the same machinery at <span style="color:var(--accent)">window</span> ('+(dist[6]*100).toFixed(0)+'%) over ladder ('+(dist[1]*100).toFixed(0)+'%). Only the final adjective changed, and only the queries that can see it changed with it.';
+    else if(tied.length>1) cap.innerHTML='"<span style="color:var(--accent3)">'+ATTN_TOKENS[qi]+'</span>" divides its attention evenly between '+tied.map(j=>'"<span style="color:var(--accent)">'+ATTN_TOKENS[j]+'</span>"').join(' and ')+' ('+(topv*100).toFixed(0)+'% each). Only tokens up to and including the query are visible: this is causal attention.';
     else cap.innerHTML='"<span style="color:var(--accent3)">'+ATTN_TOKENS[qi]+'</span>" attends most to "<span style="color:var(--accent)">'+ATTN_TOKENS[topj]+'</span>" ('+(topv*100).toFixed(0)+'%). Only tokens up to and including the query are visible: this is causal attention.';
   }
 }
