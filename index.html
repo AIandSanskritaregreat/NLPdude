@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MathCore · The Visual Mathematics of Machine Learning &amp; Linguistics</title>
+<meta name="color-scheme" content="light">
+<meta name="description" content="Learn the mathematics behind language models through worked derivations, interactive demos, and quizzes.">
+<link rel="icon" href="assets/images/favicon.svg" type="image/svg+xml">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Schibsted+Grotesk:ital,wght@0,400..900;1,400..700&family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/vendor/katex/katex.min.css">
+<script src="assets/vendor/katex/katex.min.js"></script>
+<script src="assets/vendor/katex/contrib/auto-render.min.js"></script>
+<link rel="stylesheet" href="assets/css/main.css">
+<link rel="stylesheet" href="assets/css/accessibility.css">
+<link rel="stylesheet" href="assets/css/responsive.css">
+<link rel="stylesheet" href="assets/css/gallery.css">
+</head>
+<body>
+<a class="mc-skip" href="#home-view">Skip to content</a>
+
+<!-- ══ HEADER ══════════════════════════════════════════════ -->
+<header class="mc-top">
+  <div class="mc-top-row">
+    <button class="mc-mark" onclick="showTab('overview')" aria-label="MathCore home">
+      <span class="mc-mark-tile">&part;</span>
+      <span class="mc-wordmark">Math<i>Core</i></span>
+    </button>
+    <span class="mc-top-sub">The mathematics of language and learning</span>
+    <div class="mc-top-right">
+      <span class="mc-chip">Beta</span>
+    </div>
+  </div>
+  <nav class="mc-tabs" role="tablist" aria-label="Site sections">
+    <button class="mc-tab" role="tab" id="tab-overview" aria-selected="true" onclick="showTab('overview')">Overview</button>
+    <button class="mc-tab" role="tab" id="tab-vol1" aria-selected="false" style="--ink:var(--vol1)" onclick="showTab('vol1')">Language Models</button>
+    <button class="mc-tab" role="tab" id="tab-vola" aria-selected="false" style="--ink:var(--vola)" onclick="showTab('vola')">Advanced Concepts</button>
+    <button class="mc-tab" role="tab" id="tab-vol2" aria-selected="false" style="--ink:var(--vol2)" onclick="showTab('vol2')">Computational Linguistics</button>
+    <button class="mc-tab" role="tab" id="tab-about" aria-selected="false" onclick="showTab('about')">About</button>
+  </nav>
+</header>
+
+<main id="home-view" tabindex="-1">
+
+<!-- ══ OVERVIEW ════════════════════════════════════════════ -->
+<section class="mc-panel active" id="panel-overview" role="tabpanel">
+  <div class="mc-hero-stage">
+    <canvas class="mc-globe" id="globe-canvas" aria-hidden="true"></canvas>
+    <div class="mc-globe-eqs" id="globe-eqs" aria-hidden="true"></div>
+    <div class="mc-hero-veil" aria-hidden="true"></div>
+    <div class="mc-hero-inner">
+      <div class="mc-hero-copy">
+        <div class="mc-eyebrow rise">Interactive coursework</div>
+        <h1 class="mc-h1 rise">Visualizing the Mathematics Behind <em>Machine Learning.</em></h1>
+        <p class="mc-lede rise">Learn the mathematics behind natural language processing through worked examples, interactive visualizations, and small models you can run in your browser.</p>
+        <div class="mc-cta-row rise">
+          <button class="mc-btn mc-btn-primary" onclick="openLesson('intro')">Start at the beginning &rarr;</button>
+          <button class="mc-btn mc-btn-ghost" onclick="showTab('vol1')">Browse the topics</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="mc-wrap">
+    <div class="mc-protocol">
+      <div class="mc-proto-card" style="--ink:var(--vol1)">
+        <div class="mc-proto-num">Read</div>
+        <div class="mc-proto-title">Worked derivations</div>
+        <p class="mc-proto-desc">Work through the steps behind each formula and check them against a concrete example.</p>
+      </div>
+      <div class="mc-proto-card" style="--ink:var(--vol2)">
+        <div class="mc-proto-num">Explore</div>
+        <div class="mc-proto-title">Try the calculations</div>
+        <p class="mc-proto-desc">Drag points, adjust sliders, and train small models to see how the calculations respond.</p>
+      </div>
+      <div class="mc-proto-card" style="--ink:var(--vola)">
+        <div class="mc-proto-num">Check</div>
+        <div class="mc-proto-title">Quick checks</div>
+        <p class="mc-proto-desc">Use the quizzes to check your understanding. Each option includes feedback to help you work through the answer.</p>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ══ LANGUAGE MODELS ═════════════════════════════════════ -->
+<section class="mc-panel" id="panel-vol1" role="tabpanel" style="--ink:var(--vol1)">
+  <div class="mc-wrap" id="curriculum">
+    <div class="vol-head">
+      <div class="vol-numeral">LM</div>
+      <div class="vol-head-text">
+        <div class="vol-head-title">Language Models</div>
+        <p class="vol-head-desc">From counting words to training transformers: probability, gradients, embeddings, attention, and the models built on them.</p>
+      </div>
+      <div class="vol-counts" id="counts-vol1"></div>
+    </div>
+    <div class="chapter-grid" id="vol1-grid"></div>
+  </div>
+</section>
+
+<!-- ══ ADVANCED CONCEPTS ══════════════════════════════════════ -->
+<section class="mc-panel" id="panel-vola" role="tabpanel" style="--ink:var(--vola)">
+  <div class="mc-wrap">
+    <div class="vol-head">
+      <div class="vol-numeral">AC</div>
+      <div class="vol-head-text">
+        <div class="vol-head-title">Advanced Concepts</div>
+        <p class="vol-head-desc">Alignment, retrieval, translation, recurrent architectures, and speech: topics that build on the core language-model material but stand on their own.</p>
+      </div>
+      <div class="vol-counts" id="counts-vola"></div>
+    </div>
+    <div class="chapter-grid" id="vola-grid"></div>
+  </div>
+</section>
+
+<!-- ══ COMPUTATIONAL LINGUISTICS ═══════════════════════════ -->
+<section class="mc-panel" id="panel-vol2" role="tabpanel" style="--ink:var(--vol2)">
+  <div class="mc-wrap">
+    <div class="cl-soon">
+      <div class="cl-soon-glyph" aria-hidden="true">CL</div>
+      <div class="cl-soon-kicker">In development</div>
+      <h2 class="cl-soon-title">Computational Linguistics<br><em>is being built.</em></h2>
+      <p class="cl-soon-lede">This volume will cover how computers analyze language structure and meaning, from tagging words and parsing sentences to tracking references across a passage. Lessons and interactive examples are still in development.</p>
+      <div class="cl-soon-topics">
+        <span class="cl-soon-chip">Sequence labeling</span>
+        <span class="cl-soon-chip">Constituency parsing</span>
+        <span class="cl-soon-chip">Dependency parsing</span>
+        <span class="cl-soon-chip">Information extraction</span>
+        <span class="cl-soon-chip">Semantic roles</span>
+        <span class="cl-soon-chip">Sentiment lexicons</span>
+        <span class="cl-soon-chip">Coreference</span>
+        <span class="cl-soon-chip">Discourse coherence</span>
+        <span class="cl-soon-chip">Conversation</span>
+      </div>
+      <div class="cl-soon-cta">
+        <button class="mc-btn mc-btn-primary" onclick="showTab('vol1')">Start with Language Models &rarr;</button>
+        <button class="mc-btn mc-btn-ghost" onclick="showTab('vola')">Browse Advanced Concepts</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ ABOUT ═══════════════════════════════════════════════ -->
+<section class="mc-panel" id="panel-about" role="tabpanel">
+  <div class="mc-wrap">
+    <div class="mc-about">
+      <h2 class="about-title">About<br>this project</h2>
+      <div class="about-content">
+        <p>MathCore is a guide to the mathematics behind natural language processing and machine learning. The lessons pair explanations with <strong>interactive visualizations and small, runnable models</strong>, so you can try an idea as you learn it.</p>
+        <p>Train a small neural network, move a decision boundary, or generate text one token at a time. The derivations explain how the calculations work; the demos let you change the inputs and see what follows.</p>
+        <p>I built MathCore to make this material easier to study independently. You can work through the lessons in order or explore a topic that interests you. The range of topics draws on <strong>Speech and Language Processing</strong> by Daniel Jurafsky and James H. Martin; the explanations and interactive examples were developed for this site.</p>
+        <div class="about-pills">
+          <span class="about-pill">Visual-first</span>
+          <span class="about-pill">Runnable models</span>
+          <span class="about-pill">First principles</span>
+          <span class="about-pill">Open access</span>
+          <span class="about-pill">In-browser</span>
+        </div>
+      </div>
+    </div>
+    <section class="teaching-gallery" aria-labelledby="teaching-title">
+      <header class="teaching-intro">
+        <p class="teaching-eyebrow">MathCore in the classroom</p>
+        <h2 id="teaching-title">Learning together</h2>
+        <p>Snapshots from my teaching sessions at V.R.V. Matriculation High School, bringing n-gram models, vocabulary growth, and other machine learning concepts into the classroom.</p>
+      </header>
+<section class="teaching-year" aria-labelledby="teaching-2025"><header class="teaching-year-heading"><h3 id="teaching-2025">2025</h3><p>Tokenization, words and tokens, and minimum edit distance algorithms</p></header><div class="teaching-grid"><figure class="teaching-photo" data-photo-number="3">
+  <button type="button" class="teaching-photo-open" aria-label="Enlarge photo: Summer 2025 at V.R.V. Matriculation High School." aria-haspopup="dialog">
+    <img src="assets/images/classroom/2025-summer-visit.webp" alt="Outside the school building during the summer 2025 visit." width="1600" height="1200" loading="lazy" decoding="async">
+    <span class="teaching-photo-hint" aria-hidden="true">View photo ↗</span>
+  </button>
+  <figcaption>Summer 2025 at V.R.V. Matriculation High School.</figcaption>
+</figure><figure class="teaching-photo" data-photo-number="1">
+  <button type="button" class="teaching-photo-open" aria-label="Enlarge photo: Introducing students to n-gram models." aria-haspopup="dialog">
+    <img src="assets/images/classroom/2025-ngram-introduction.webp" alt="A lesson at the front of a classroom, with students seated facing the blackboard." width="1600" height="1200" loading="lazy" decoding="async">
+    <span class="teaching-photo-hint" aria-hidden="true">View photo ↗</span>
+  </button>
+  <figcaption>Introducing students to n-gram models.</figcaption>
+</figure><figure class="teaching-photo teaching-photo-portrait" data-photo-number="2">
+  <button type="button" class="teaching-photo-open" aria-label="Enlarge photo: Using MathCore to help students explore Herdan’s law and vocabulary growth in machine learning." aria-haspopup="dialog">
+    <img src="assets/images/classroom/2025-herdans-law-demo.webp" alt="Students watching a MathCore demonstration on a classroom screen." width="1200" height="1600" loading="lazy" decoding="async">
+    <span class="teaching-photo-hint" aria-hidden="true">View photo ↗</span>
+  </button>
+  <figcaption>Using MathCore to help students explore Herdan’s law and vocabulary growth in machine learning.</figcaption>
+</figure><figure class="teaching-photo teaching-photo-portrait" data-photo-number="4">
+  <button type="button" class="teaching-photo-open" aria-label="Enlarge photo: Working through vocabulary growth and Herdan’s law with the website’s interactive examples." aria-haspopup="dialog">
+    <img src="assets/images/classroom/2025-vocabulary-growth.webp" alt="Explaining a MathCore visualization on the screen to the class." width="1200" height="1600" loading="lazy" decoding="async">
+    <span class="teaching-photo-hint" aria-hidden="true">View photo ↗</span>
+  </button>
+  <figcaption>Working through vocabulary growth and Herdan’s law with the website’s interactive examples.</figcaption>
+</figure><figure class="teaching-photo teaching-photo-portrait" data-photo-number="5">
+  <button type="button" class="teaching-photo-open" aria-label="Enlarge photo: Teaching Levenshtein distance at the blackboard." aria-haspopup="dialog">
+    <img src="assets/images/classroom/2025-levenshtein-blackboard.webp" alt="Pointing to an edit-distance calculation on the blackboard." width="548" height="782" loading="lazy" decoding="async">
+    <span class="teaching-photo-hint" aria-hidden="true">View photo ↗</span>
+  </button>
+  <figcaption>Teaching Levenshtein distance at the blackboard.</figcaption>
+</figure><figure class="teaching-photo teaching-photo-portrait" data-photo-number="6">
+  <button type="button" class="teaching-photo-open" aria-label="Enlarge photo: Working through a Levenshtein distance example with the class." aria-haspopup="dialog">
+    <img src="assets/images/classroom/2025-levenshtein-example.webp" alt="Continuing the blackboard explanation of edit distance." width="618" height="782" loading="lazy" decoding="async">
+    <span class="teaching-photo-hint" aria-hidden="true">View photo ↗</span>
+  </button>
+  <figcaption>Working through a Levenshtein distance example with the class.</figcaption>
+</figure></div></section><section class="teaching-year" aria-labelledby="teaching-2026"><header class="teaching-year-heading"><h3 id="teaching-2026">2026</h3><p>N-gram models, interpolation, gradient descent, and neural networks</p></header><div class="teaching-grid"><figure class="teaching-photo" data-photo-number="7">
+  <button type="button" class="teaching-photo-open" aria-label="Enlarge photo: Explaining n-gram models to students." aria-haspopup="dialog">
+    <img src="assets/images/classroom/2026-ngram-models.webp" alt="Discussing a model with students beside the blackboard." width="1152" height="864" loading="lazy" decoding="async">
+    <span class="teaching-photo-hint" aria-hidden="true">View photo ↗</span>
+  </button>
+  <figcaption>Explaining n-gram models to students.</figcaption>
+</figure><figure class="teaching-photo" data-photo-number="10">
+  <button type="button" class="teaching-photo-open" aria-label="Enlarge photo: Discussing n-gram models and how interpolation combines their predictions." aria-haspopup="dialog">
+    <img src="assets/images/classroom/2026-interpolation.webp" alt="Explaining a blackboard example to a small group of students." width="1152" height="864" loading="lazy" decoding="async">
+    <span class="teaching-photo-hint" aria-hidden="true">View photo ↗</span>
+  </button>
+  <figcaption>Discussing n-gram models and how interpolation combines their predictions.</figcaption>
+</figure><figure class="teaching-photo" data-photo-number="8">
+  <button type="button" class="teaching-photo-open" aria-label="Enlarge photo: Teaching gradient descent with MathCore’s Gradient Descent Explorer." aria-haspopup="dialog">
+    <img src="assets/images/classroom/2026-gradient-descent.webp" alt="Helping seated students during a lesson with MathCore on the screen." width="1152" height="864" loading="lazy" decoding="async">
+    <span class="teaching-photo-hint" aria-hidden="true">View photo ↗</span>
+  </button>
+  <figcaption>Teaching gradient descent with MathCore’s Gradient Descent Explorer.</figcaption>
+</figure><figure class="teaching-photo" data-photo-number="9">
+  <button type="button" class="teaching-photo-open" aria-label="Enlarge photo: Guiding students through the website’s Gradient Descent Explorer." aria-haspopup="dialog">
+    <img src="assets/images/classroom/2026-gradient-descent-explorer.webp" alt="Students gathered around the Gradient Descent Explorer on the classroom screen." width="1152" height="864" loading="lazy" decoding="async">
+    <span class="teaching-photo-hint" aria-hidden="true">View photo ↗</span>
+  </button>
+  <figcaption>Guiding students through the website’s Gradient Descent Explorer.</figcaption>
+</figure></div></section></section>
+
+  </div>
+</section>
+
+<footer class="mc-footer">
+  <div class="mc-footer-in">
+    <span class="mc-footer-mark">Math<i>Core</i></span>
+    <span class="sep">&middot;</span>
+    <span>Built to widen access to the mathematics of machine learning.</span>
+  </div>
+</footer>
+
+</main><!-- end home-view -->
+
+<!-- ══ SUBSECTION VIEW ═════════════════════════════════════ -->
+<div id="subsection-view">
+  <div class="lesson-progress" id="sub-progress" style="width:0%"></div>
+  <div class="sub-nav">
+    <button class="sub-back" onclick="closeSec()">&#8592; Back</button>
+    <button class="sub-back" onclick="closeLesson()">&#8617; Curriculum</button>
+    <span class="sub-crumb" id="sub-crumb"></span>
+  </div>
+  <div class="sub-body" id="sub-body"></div>
+</div>
+
+<!-- ══ LESSON VIEW ═════════════════════════════════════════ -->
+<div id="lesson-view">
+  <div class="lesson-progress" id="lesson-progress" style="width:0%"></div>
+  <div class="lesson-nav">
+    <button class="lesson-back" onclick="closeLesson()">&#8592; Curriculum</button>
+    <details class="mc-toc" id="mc-toc">
+      <summary>Contents</summary>
+      <div class="mc-toc-panel" id="mc-toc-panel"></div>
+    </details>
+    <span class="lesson-crumb" id="lesson-crumb"></span>
+    <span class="lesson-title-nav" id="lesson-title-nav"></span>
+    <span class="lesson-nav-spacer"></span>
+    <button class="lesson-step" id="lesson-prev" onclick="mcStep(-1)">&#8592; Prev</button>
+    <button class="lesson-step" id="lesson-next" onclick="mcStep(1)">Next &#8594;</button>
+  </div>
+  <div class="lesson-body" id="lesson-body"></div>
+</div>
+
+
+<template id="editdist-latex-1">\[D[i,j] = \min \begin{cases} D[i-1,\;j] + \text{del-cost}(X[i]) \\ D[i,\;j-1] + \text{ins-cost}(Y[j]) \\ D[i-1,\;j-1] + \text{sub-cost}(X[i],\,Y[j]) \end{cases}\]</template>
+<template id="editdist-latex-2">\[D[i,j] = \min \begin{cases} D[i-1,j]+1 \\ D[i,j-1]+1 \\ D[i-1,j-1]+ \begin{cases} 2 & X[i]\neq Y[j] \\ 0 & X[i]=Y[j] \end{cases} \end{cases}\]</template>
+
+<!-- Lesson engine, then one script per chapter. These are classic scripts sharing one global
+     scope, so order matters: later chapters reuse helpers defined by earlier ones. -->
+<script src="assets/js/core/lesson-engine.js"></script>
+<script src="assets/js/chapters/02-words-and-tokens.js"></script>
+<script src="assets/js/chapters/03-ngram-language-models.js"></script>
+<script src="assets/js/chapters/04-logistic-regression.js"></script>
+<script src="assets/js/chapters/05-embeddings.js"></script>
+<script src="assets/js/chapters/06-neural-networks.js"></script>
+<script src="assets/js/chapters/07-large-language-models.js"></script>
+<script src="assets/js/chapters/08-transformers.js"></script>
+<script src="assets/js/chapters/09-post-training.js"></script>
+<script src="assets/js/chapters/10-masked-language-models.js"></script>
+<script src="assets/js/chapters/11-retrieval-and-rag.js"></script>
+<script src="assets/js/chapters/12-machine-translation.js"></script>
+<script src="assets/js/chapters/13-rnns-and-lstms.js"></script>
+<script src="assets/js/chapters/14-phonetics.js"></script>
+<script src="assets/js/chapters/15-speech-recognition.js"></script>
+<script src="assets/js/chapters/16-text-to-speech.js"></script>
+<script src="assets/js/core/hero-equations.js"></script>
+
+<!-- FULL-SCREEN GRADIENT DESCENT EXPLORER -->
+<div id="gd-explorer" style="display:none;position:fixed;inset:0;z-index:2000;background:var(--bg);overflow:hidden">
+  <div style="position:absolute;top:0;left:0;right:0;height:58px;background:var(--surface);border-bottom:1px solid var(--border2);display:flex;align-items:center;justify-content:space-between;padding:0 1.5rem;z-index:10">
+    <div style="display:flex;align-items:center;gap:14px">
+      <span style="font-family:var(--display);font-size:1.3rem;letter-spacing:.06em;color:var(--text)">GRADIENT DESCENT EXPLORER</span>
+      <span style="font-family:var(--mono);font-size:.62rem;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;background:var(--surface2);padding:.25rem .6rem;border-radius:5px">Interactive 3D</span>
+    </div>
+    <button onclick="closeGDExplorer()" style="background:var(--surface2);color:var(--text);border:1px solid var(--border2);border-radius:8px;padding:.5rem 1.1rem;font-family:var(--mono);font-size:.74rem;cursor:pointer">&#10005; Close</button>
+  </div>
+
+  <div style="position:absolute;top:58px;left:0;bottom:0;width:320px;background:var(--surface);border-right:1px solid var(--border2);overflow-y:auto;padding:1.5rem;z-index:5">
+    <div style="font-family:var(--mono);font-size:.62rem;color:var(--muted);text-transform:uppercase;letter-spacing:.12em;margin-bottom:.85rem">Loss Surface</div>
+    <div id="gde-surfaces" style="display:flex;flex-direction:column;gap:.5rem;margin-bottom:1.25rem"></div>
+
+    <div style="font-family:var(--mono);font-size:.62rem;color:var(--accent);text-transform:uppercase;letter-spacing:.12em;margin-bottom:.6rem">&#402;(x,y) Custom Function</div>
+    <div style="margin-bottom:1.25rem">
+      <input id="gde-custom-input" type="text" value="0.5*(x^2 + y^2)" placeholder="e.g. x^2 + sin(y)" style="width:100%;background:var(--surface2);border:1px solid var(--border2);border-radius:8px;padding:.55rem .7rem;font-family:var(--mono);font-size:.78rem;color:var(--text);outline:none;box-sizing:border-box">
+      <button onclick="gdeApplyCustom()" style="width:100%;margin-top:.5rem;background:var(--accent);color:var(--bg);border:none;border-radius:8px;padding:.5rem;font-family:var(--mono);font-size:.72rem;font-weight:700;cursor:pointer">Graph It</button>
+      <div id="gde-custom-err" style="font-family:var(--mono);font-size:.62rem;color:var(--accent3);margin-top:.4rem;min-height:.8rem"></div>
+      <div style="font-family:var(--mono);font-size:.58rem;color:var(--muted);margin-top:.3rem;line-height:1.5">Use x, y, and: + - * / ^ sin cos exp log sqrt abs. Examples: <span style="color:var(--accent)">x^2-y^2</span>, <span style="color:var(--accent)">sin(x)*cos(y)</span>, <span style="color:var(--accent)">(x^2+y^2)/4-cos(2*x)</span></div>
+    </div>
+
+    <div style="font-family:var(--mono);font-size:.62rem;color:#a78bfa;text-transform:uppercase;letter-spacing:.12em;margin-bottom:.6rem">N-Dimensional Projection</div>
+    <div style="margin-bottom:1.75rem">
+      <div style="display:flex;justify-content:space-between;font-family:var(--mono);font-size:.7rem;color:var(--muted);margin-bottom:5px"><span>dimensions</span><span id="gde-ndval" style="color:#a78bfa">2</span></div>
+      <input id="gde-nd" type="range" min="2" max="500" step="1" value="2" oninput="gdeNdUpdate()" style="width:100%;accent-color:#a78bfa">
+      <div id="gde-nd-info" style="font-family:var(--mono);font-size:.6rem;color:var(--muted);margin-top:.5rem;line-height:1.6"></div>
+    </div>
+
+    <div style="font-family:var(--mono);font-size:.62rem;color:var(--muted);text-transform:uppercase;letter-spacing:.12em;margin-bottom:.85rem">Controls</div>
+    <div style="margin-bottom:1rem">
+      <div style="display:flex;justify-content:space-between;font-family:var(--mono);font-size:.7rem;color:var(--muted);margin-bottom:5px"><span>Learning rate</span><span id="gde-lrval" style="color:var(--accent)">0.10</span></div>
+      <input id="gde-lr" type="range" min="0.01" max="0.95" step="0.01" value="0.10" oninput="gdeLrUpdate()" style="width:100%;accent-color:var(--accent)">
+    </div>
+    <div style="margin-bottom:1.25rem">
+      <div style="display:flex;justify-content:space-between;font-family:var(--mono);font-size:.7rem;color:var(--muted);margin-bottom:5px"><span>Bias b (shifts the surface)</span><span id="gde-bval" style="color:#3DDC84">0.0</span></div>
+      <input id="gde-b" type="range" min="-2" max="2" step="0.1" value="0" oninput="gdeBiasUpdate()" style="width:100%;accent-color:#3DDC84">
+      <div style="font-family:var(--mono);font-size:.58rem;color:var(--muted);margin-top:.4rem;line-height:1.5">The bias is a third learnable parameter. Here it slides the whole surface along the diagonal, carrying its stationary point with it. In training, the bias is optimized by gradient descent exactly like any weight.</div>
+    </div>
+    <div style="display:flex;gap:8px;margin-bottom:1.25rem;flex-wrap:wrap">
+      <button onclick="gdeStart()" id="gde-play" style="flex:1;background:var(--accent);color:var(--bg);border:none;border-radius:8px;padding:.6rem;font-family:var(--mono);font-size:.74rem;font-weight:700;cursor:pointer">&#9654; Play</button>
+      <button onclick="gdeStep()" style="flex:1;background:var(--surface3);color:var(--text);border:1px solid var(--border2);border-radius:8px;padding:.6rem;font-family:var(--mono);font-size:.74rem;cursor:pointer">Step</button>
+      <button onclick="gdeReset()" style="flex:1;background:var(--surface2);color:var(--muted);border:1px solid var(--border2);border-radius:8px;padding:.6rem;font-family:var(--mono);font-size:.74rem;cursor:pointer">Reset</button>
+    </div>
+
+    <div style="background:var(--surface2);border-radius:10px;padding:1rem;margin-bottom:1.25rem">
+      <div style="display:flex;justify-content:space-between;font-family:var(--mono);font-size:.72rem;margin-bottom:.5rem"><span style="color:var(--muted)">step</span><span id="gde-step" style="color:var(--text)">0</span></div>
+      <div style="display:flex;justify-content:space-between;font-family:var(--mono);font-size:.72rem;margin-bottom:.5rem"><span style="color:var(--muted)">loss</span><span id="gde-loss" style="color:var(--accent3)">&mdash;</span></div>
+      <div style="display:flex;justify-content:space-between;font-family:var(--mono);font-size:.72rem;margin-bottom:.5rem"><span style="color:var(--muted)">w&#8321;, w&#8322;</span><span id="gde-w" style="color:var(--accent)">&mdash;</span></div>
+      <div style="display:flex;justify-content:space-between;font-family:var(--mono);font-size:.72rem;margin-bottom:.5rem"><span style="color:var(--muted)">bias b</span><span id="gde-bstat" style="color:#3DDC84">0.0</span></div>
+      <div style="display:flex;justify-content:space-between;font-family:var(--mono);font-size:.72rem"><span style="color:var(--muted)">gradient</span><span id="gde-grad" style="color:#a78bfa">&mdash;</span></div>
+    </div>
+
+    <div style="font-family:var(--mono);font-size:.62rem;color:var(--muted);text-transform:uppercase;letter-spacing:.12em;margin-bottom:.6rem">View</div>
+    <div style="display:flex;gap:8px;margin-bottom:1.25rem;flex-wrap:wrap">
+      <button onclick="gdeAutoRotate()" id="gde-rotate" style="flex:1;background:var(--surface2);color:var(--muted);border:1px solid var(--border2);border-radius:8px;padding:.5rem;font-family:var(--mono);font-size:.7rem;cursor:pointer">&#8635; Auto-rotate</button>
+      <button onclick="gdeTopView()" style="flex:1;background:var(--surface2);color:var(--muted);border:1px solid var(--border2);border-radius:8px;padding:.5rem;font-family:var(--mono);font-size:.7rem;cursor:pointer">Top-down</button>
+    </div>
+
+    <div id="gde-description" style="background:var(--surface2);border-left:2px solid var(--accent);border-radius:8px;padding:1rem;font-family:var(--body);font-size:.8rem;color:var(--muted);line-height:1.7"></div>
+  </div>
+
+  <div style="position:absolute;top:58px;left:320px;right:0;bottom:0">
+    <canvas id="gde-canvas" style="width:100%;height:100%;cursor:grab;touch-action:none;display:block"></canvas>
+    <div style="position:absolute;bottom:1rem;left:50%;transform:translateX(-50%);font-family:var(--mono);font-size:.66rem;color:var(--muted);background:var(--surface);padding:.5rem 1rem;border-radius:8px;border:1px solid var(--border);white-space:nowrap">Drag to rotate &middot; scroll to zoom &middot; the cyan path is gradient descent</div>
+  </div>
+</div>
+
+<!-- FULL-SCREEN NEURAL NETWORK PLAYGROUND -->
+<div id="nn-playground" style="display:none;position:fixed;inset:0;z-index:2000;background:var(--bg);overflow:hidden">
+  <div style="position:absolute;top:0;left:0;right:0;height:56px;background:var(--surface);border-bottom:1px solid var(--border2);display:flex;align-items:center;justify-content:space-between;padding:0 1.5rem;z-index:10">
+    <div style="display:flex;align-items:center;gap:14px">
+      <span style="font-family:var(--display);font-size:1.3rem;letter-spacing:.06em;color:var(--text)">NEURAL NETWORK PLAYGROUND</span>
+      <span id="pg-arch" style="font-family:var(--mono);font-size:.66rem;color:var(--accent);text-transform:uppercase;letter-spacing:.08em;background:var(--surface2);padding:.25rem .6rem;border-radius:5px">[2, 4, 4, 1]</span>
+    </div>
+    <button onclick="closeNNPlayground()" style="background:var(--surface2);color:var(--text);border:1px solid var(--border2);border-radius:8px;padding:.5rem 1.1rem;font-family:var(--mono);font-size:.74rem;cursor:pointer">&#10005; Close</button>
+  </div>
+
+  <div style="position:absolute;top:56px;left:0;bottom:0;width:300px;background:var(--surface);border-right:1px solid var(--border2);overflow-y:auto;padding:1.25rem;z-index:5">
+    <div style="font-family:var(--mono);font-size:.62rem;color:var(--muted);text-transform:uppercase;letter-spacing:.12em;margin-bottom:.6rem">Dataset</div>
+    <div style="display:flex;gap:6px;margin-bottom:1.25rem">
+      <button class="pg-ds-btn" data-ds="xor" onclick="pgSetDataset('xor')" style="flex:1">XOR</button>
+      <button class="pg-ds-btn" data-ds="circle" onclick="pgSetDataset('circle')" style="flex:1">Circle</button>
+      <button class="pg-ds-btn" data-ds="spiral" onclick="pgSetDataset('spiral')" style="flex:1">Spiral</button>
+    </div>
+
+    <div style="font-family:var(--mono);font-size:.62rem;color:var(--muted);text-transform:uppercase;letter-spacing:.12em;margin-bottom:.6rem">Hidden activation</div>
+    <div style="display:flex;gap:6px;margin-bottom:1.25rem">
+      <button class="pg-act-btn" data-act="tanh" onclick="pgSetAct('tanh')" style="flex:1">tanh</button>
+      <button class="pg-act-btn" data-act="relu" onclick="pgSetAct('relu')" style="flex:1">ReLU</button>
+      <button class="pg-act-btn" data-act="sigmoid" onclick="pgSetAct('sigmoid')" style="flex:1">sigmoid</button>
+    </div>
+
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.6rem">
+      <span style="font-family:var(--mono);font-size:.62rem;color:var(--muted);text-transform:uppercase;letter-spacing:.12em">Hidden layers</span>
+      <button onclick="pgAddLayer()" style="background:var(--surface2);border:1px solid var(--border2);border-radius:5px;color:var(--accent);cursor:pointer;font-family:var(--mono);font-size:.62rem;padding:.2rem .5rem">+ layer</button>
+    </div>
+    <div id="pg-hidden-ctrl" style="margin-bottom:1.25rem"></div>
+
+    <div style="margin-bottom:1.25rem">
+      <div style="display:flex;justify-content:space-between;font-family:var(--mono);font-size:.7rem;color:var(--muted);margin-bottom:5px"><span>learning rate &#951;</span><span id="pg-lrval" style="color:var(--accent)">0.080</span></div>
+      <input id="pg-lr" type="range" min="0.005" max="0.5" step="0.005" value="0.08" oninput="pgSetLr(this.value)" style="width:100%;accent-color:var(--accent)">
+    </div>
+
+    <div style="display:flex;gap:6px;margin-bottom:1.25rem">
+      <button onclick="pgPlay()" id="pg-play" style="flex:1;background:var(--accent);color:var(--bg);border:none;border-radius:8px;padding:.6rem;font-family:var(--mono);font-size:.74rem;font-weight:700;cursor:pointer">&#9654; Play</button>
+      <button onclick="pgStep()" style="flex:1;background:var(--surface3);color:var(--text);border:1px solid var(--border2);border-radius:8px;padding:.6rem;font-family:var(--mono);font-size:.74rem;cursor:pointer">Step</button>
+      <button onclick="pgReset()" style="flex:1;background:var(--surface2);color:var(--muted);border:1px solid var(--border2);border-radius:8px;padding:.6rem;font-family:var(--mono);font-size:.74rem;cursor:pointer">Reset</button>
+    </div>
+
+    <div style="background:var(--surface2);border-radius:10px;padding:.9rem;margin-bottom:1.25rem">
+      <div style="display:flex;justify-content:space-between;font-family:var(--mono);font-size:.72rem;margin-bottom:.45rem"><span style="color:var(--muted)">epoch</span><span id="pg-epoch" style="color:var(--text)">0</span></div>
+      <div style="display:flex;justify-content:space-between;font-family:var(--mono);font-size:.72rem"><span style="color:var(--muted)">loss</span><span id="pg-loss" style="color:var(--accent4)">&mdash;</span></div>
+    </div>
+
+    <div style="font-family:var(--mono);font-size:.62rem;color:#fde047;text-transform:uppercase;letter-spacing:.12em;margin-bottom:.6rem">Neuron inspector</div>
+    <div id="pg-inspector" style="background:var(--surface2);border-left:2px solid #fde047;border-radius:8px;padding:.9rem"></div>
+  </div>
+
+  <div style="position:absolute;top:56px;left:300px;right:0;bottom:0;display:flex;flex-direction:column">
+    <div style="flex:1.4;border-bottom:1px solid var(--border2);position:relative;min-height:0">
+      <canvas id="pg-net-canvas" style="width:100%;height:100%;display:block;cursor:pointer"></canvas>
+      <div style="position:absolute;bottom:.6rem;left:50%;transform:translateX(-50%);font-family:var(--mono);font-size:.62rem;color:var(--muted);background:var(--surface);padding:.35rem .8rem;border-radius:6px;border:1px solid var(--border);white-space:nowrap">node brightness = activation &middot; edge color = weight &middot; click a neuron to rewire it</div>
+    </div>
+    <div style="flex:1;display:flex;min-height:0">
+      <div style="flex:1;border-right:1px solid var(--border2);position:relative"><canvas id="pg-bound-canvas" style="width:100%;height:100%;display:block"></canvas></div>
+      <div style="width:42%;position:relative"><canvas id="pg-loss-canvas" style="width:100%;height:100%;display:block"></canvas></div>
+    </div>
+  </div>
+</div>
+
+
+<!-- FULL-SCREEN LLM ANATOMY -->
+<div id="llm-anatomy" style="display:none;position:fixed;inset:0;z-index:2000;background:var(--bg);overflow:hidden">
+  <div style="position:absolute;top:0;left:0;right:0;height:56px;background:var(--surface);border-bottom:1px solid var(--border2);display:flex;align-items:center;justify-content:space-between;padding:0 1.5rem;z-index:10">
+    <span style="font-family:var(--display);font-size:1.3rem;letter-spacing:.06em;color:var(--text)">ANATOMY OF AN LLM</span>
+    <button onclick="closeLLMAnatomy()" style="background:var(--surface2);color:var(--text);border:1px solid var(--border2);border-radius:8px;padding:.5rem 1.1rem;font-family:var(--mono);font-size:.74rem;cursor:pointer">&#10005; Close</button>
+  </div>
+  <div style="position:absolute;top:56px;left:0;bottom:0;width:260px;background:var(--surface);border-right:1px solid var(--border2);overflow-y:auto;padding:1.1rem;z-index:5">
+    <div style="font-family:var(--mono);font-size:.6rem;color:var(--muted);text-transform:uppercase;letter-spacing:.12em;margin-bottom:.8rem">Click a stage</div>
+    <div id="anat-rail" style="display:flex;flex-direction:column;gap:.5rem"></div>
+  </div>
+  <div style="position:absolute;top:56px;left:260px;right:0;bottom:0;display:flex;flex-direction:column">
+    <div style="height:62px;border-bottom:1px solid var(--border2);background:var(--surface);display:flex;align-items:center;gap:0;padding:0 1.5rem;overflow-x:auto">
+      <div id="anat-strip" style="display:flex;align-items:center"></div>
+    </div>
+    <div id="anat-panel" style="flex:1;overflow-y:auto;padding:1.8rem 2rem;min-height:0"></div>
+  </div>
+</div>
+
+<!-- FULL-SCREEN LIVE MODEL -->
+<div id="llm-model" style="display:none;position:fixed;inset:0;z-index:2000;background:var(--bg);overflow:hidden">
+  <div style="position:absolute;top:0;left:0;right:0;height:56px;background:var(--surface);border-bottom:1px solid var(--border2);display:flex;align-items:center;justify-content:space-between;padding:0 1.5rem;z-index:10">
+    <div style="display:flex;align-items:center;gap:14px">
+      <span style="font-family:var(--display);font-size:1.3rem;letter-spacing:.06em;color:var(--text)">LIVE LANGUAGE MODEL</span>
+      <span id="lm-engine-chip" style="font-family:var(--mono);font-size:.62rem;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;background:var(--surface2);padding:.25rem .6rem;border-radius:5px">loading real model&#8230;</span>
+    </div>
+    <button onclick="closeLLMModel()" style="background:var(--surface2);color:var(--text);border:1px solid var(--border2);border-radius:8px;padding:.5rem 1.1rem;font-family:var(--mono);font-size:.74rem;cursor:pointer">&#10005; Close</button>
+  </div>
+  <div style="position:absolute;top:56px;left:0;right:0;bottom:0;display:flex">
+    <!-- left: generation -->
+    <div style="flex:1.3;border-right:1px solid var(--border2);padding:1.5rem;overflow-y:auto;display:flex;flex-direction:column;min-width:0">
+      <div style="font-family:var(--mono);font-size:.62rem;color:var(--muted);text-transform:uppercase;letter-spacing:.12em;margin-bottom:.6rem">Prompt</div>
+      <div style="display:flex;gap:8px;margin-bottom:1rem;flex-wrap:wrap">
+        <input id="lm-prompt" type="text" value="the night was" onkeydown="if(event.key==='Enter'){event.preventDefault();lmUsePrompt();}" style="flex:1;min-width:180px;background:var(--surface2);border:1px solid var(--border2);border-radius:8px;padding:.6rem .9rem;font-family:var(--mono);font-size:.85rem;color:var(--text);outline:none">
+        <button onclick="lmUsePrompt()" style="background:var(--surface3);color:var(--text);border:1px solid var(--border2);border-radius:8px;padding:.6rem 1rem;font-family:var(--mono);font-size:.74rem;cursor:pointer">Set</button>
+      </div>
+      <div id="lm-loadbar" style="display:none;margin-bottom:1rem"></div>
+      <div style="font-family:var(--mono);font-size:.62rem;color:var(--muted);text-transform:uppercase;letter-spacing:.12em;margin-bottom:.6rem">Generated text</div>
+      <div id="lm-output" style="flex:1;background:var(--surface2);border-radius:10px;padding:1.1rem 1.2rem;font-family:var(--mono);font-size:1rem;line-height:2;min-height:140px;margin-bottom:1rem"></div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button id="lm-gen" onclick="lmStep()" style="background:var(--accent);color:var(--bg);border:none;border-radius:8px;padding:.6rem 1.2rem;font-family:var(--mono);font-size:.74rem;font-weight:700;cursor:pointer">Generate token &#8594;</button>
+        <button onclick="lmAuto()" id="lm-auto" style="background:var(--surface3);color:var(--text);border:1px solid var(--border2);border-radius:8px;padding:.6rem 1.2rem;font-family:var(--mono);font-size:.74rem;cursor:pointer">&#9654; Auto</button>
+        <button onclick="lmReset()" style="background:var(--surface2);color:var(--muted);border:1px solid var(--border2);border-radius:8px;padding:.6rem 1.2rem;font-family:var(--mono);font-size:.74rem;cursor:pointer">Reset</button>
+      </div>
+    </div>
+    <!-- right: internals -->
+    <div style="width:380px;background:var(--surface);overflow-y:auto;padding:1.5rem">
+      <div style="font-family:var(--mono);font-size:.62rem;color:var(--accent);text-transform:uppercase;letter-spacing:.12em;margin-bottom:.5rem">Under the hood</div>
+      <div style="font-family:var(--mono);font-size:.6rem;color:var(--muted);line-height:1.6;margin-bottom:1.1rem">This panel updates every time you generate a token. The bars are the model's real next-token distribution after temperature.</div>
+
+      <div style="font-family:var(--mono);font-size:.6rem;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:.5rem">Context window (conditioning tokens)</div>
+      <div id="lm-ctxwin" style="margin-bottom:.4rem;min-height:1.8rem"></div>
+      <div style="font-family:var(--mono);font-size:.58rem;color:var(--muted);margin-bottom:1.1rem">engine / source: <span id="lm-src" style="color:var(--accent2)">&mdash;</span></div>
+
+      <div style="font-family:var(--mono);font-size:.6rem;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:.6rem">Next-token distribution (after temperature)</div>
+      <div id="lm-dist" style="display:flex;flex-direction:column;gap:.45rem;margin-bottom:1.2rem"></div>
+
+      <div style="margin-bottom:1rem">
+        <div style="display:flex;justify-content:space-between;font-family:var(--mono);font-size:.7rem;color:var(--muted);margin-bottom:5px"><span>temperature &tau;</span><span id="lm-tauval" style="color:var(--accent)">0.80</span></div>
+        <input id="lm-tau" type="range" min="0.2" max="2" step="0.05" value="0.8" oninput="lmSetTau(this.value)" style="width:100%;accent-color:var(--accent)">
+      </div>
+      <div style="font-family:var(--mono);font-size:.6rem;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:.5rem">Decoding</div>
+      <div style="display:flex;gap:6px;margin-bottom:1.2rem">
+        <button class="lm-mode-btn" data-m="greedy" onclick="lmSetMode('greedy')" style="flex:1">greedy</button>
+        <button class="lm-mode-btn" data-m="sample" onclick="lmSetMode('sample')" style="flex:1">sample</button>
+      </div>
+      <div style="background:var(--surface2);border-radius:10px;padding:.85rem;font-family:var(--mono);font-size:.72rem;display:flex;justify-content:space-between"><span style="color:var(--muted)">tokens generated</span><span id="lm-steps" style="color:var(--text)">0</span></div>
+    </div>
+  </div>
+</div>
+
+
+<!-- FULL-SCREEN TRANSFORMER STACK -->
+<div id="tx-full" style="display:none;position:fixed;inset:0;z-index:2000;background:var(--bg);overflow:hidden">
+  <div style="position:absolute;top:0;left:0;right:0;height:56px;background:var(--surface);border-bottom:1px solid var(--border2);display:flex;align-items:center;justify-content:space-between;padding:0 1.5rem;z-index:10">
+    <span style="font-family:var(--display);font-size:1.3rem;letter-spacing:.06em;color:var(--text)">THE WHOLE TRANSFORMER</span>
+    <button onclick="closeTXFull()" style="background:var(--surface2);color:var(--text);border:1px solid var(--border2);border-radius:8px;padding:.5rem 1.1rem;font-family:var(--mono);font-size:.74rem;cursor:pointer">&#10005; Close</button>
+  </div>
+  <div style="position:absolute;top:56px;left:0;bottom:0;width:300px;background:var(--surface);border-right:1px solid var(--border2);overflow-y:auto;padding:1.25rem;z-index:5">
+    <div style="font-family:var(--mono);font-size:.62rem;color:var(--muted);text-transform:uppercase;letter-spacing:.12em;margin-bottom:.7rem">Stack stages (bottom up)</div>
+    <div id="txfull-stagelist" style="display:flex;flex-direction:column;gap:.4rem;margin-bottom:1rem"></div>
+    <div style="display:flex;gap:8px">
+      <button onclick="txFullStep(-1)" style="flex:1;background:var(--surface2);color:var(--text);border:1px solid var(--border2);border-radius:8px;padding:.5rem;font-family:var(--mono);font-size:.72rem;cursor:pointer">&#8595; Down</button>
+      <button onclick="txFullStep(1)" style="flex:1;background:var(--accent);color:var(--bg);border:none;border-radius:8px;padding:.5rem;font-family:var(--mono);font-size:.72rem;font-weight:700;cursor:pointer">Up &#8593;</button>
+    </div>
+  </div>
+  <div style="position:absolute;top:56px;left:300px;right:0;bottom:0;display:flex;flex-direction:column">
+    <div style="flex:1.7;position:relative;min-height:0"><canvas id="txfull-canvas" style="width:100%;height:100%;display:block"></canvas></div>
+    <div id="txfull-desc" style="flex:1;border-top:1px solid var(--border2);background:var(--surface);padding:1.5rem 2rem;overflow-y:auto;font-family:var(--body);font-size:.92rem;color:var(--muted);line-height:1.8"></div>
+  </div>
+</div>
+
+<!-- FULL-SCREEN TRANSFORMER MODEL -->
+<div id="tx-model" style="display:none;position:fixed;inset:0;z-index:2000;background:var(--bg);overflow:hidden">
+  <div style="position:absolute;top:0;left:0;right:0;height:56px;background:var(--surface);border-bottom:1px solid var(--border2);display:flex;align-items:center;justify-content:space-between;padding:0 1.5rem;z-index:10">
+    <div style="display:flex;align-items:center;gap:14px">
+      <span style="font-family:var(--display);font-size:1.3rem;letter-spacing:.06em;color:var(--text)">LIVE TRANSFORMER</span>
+      <span style="font-family:var(--mono);font-size:.62rem;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;background:var(--surface2);padding:.25rem .6rem;border-radius:5px">real multi-head self-attention, forward pass</span>
+    </div>
+    <button onclick="closeTXModel()" style="background:var(--surface2);color:var(--text);border:1px solid var(--border2);border-radius:8px;padding:.5rem 1.1rem;font-family:var(--mono);font-size:.74rem;cursor:pointer">&#10005; Close</button>
+  </div>
+  <div style="position:absolute;top:56px;left:0;right:0;bottom:0;display:flex">
+    <!-- left: tokens + attention matrix -->
+    <div style="flex:1.2;border-right:1px solid var(--border2);padding:1.5rem;overflow-y:auto;min-width:0">
+      <div style="font-family:var(--mono);font-size:.62rem;color:var(--muted);text-transform:uppercase;letter-spacing:.12em;margin-bottom:.6rem">Input tokens &middot; click to inspect, &#8635; to change</div>
+      <div id="txm-tokens" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:.7rem"></div>
+      <div style="display:flex;gap:8px;margin-bottom:1.2rem">
+        <button onclick="txmAddTok()" style="background:var(--surface2);border:1px solid var(--border2);border-radius:6px;color:var(--accent);font-family:var(--mono);font-size:.64rem;padding:.3rem .7rem;cursor:pointer">+ token</button>
+        <button onclick="txmDelTok()" style="background:var(--surface2);border:1px solid var(--border2);border-radius:6px;color:var(--accent3);font-family:var(--mono);font-size:.64rem;padding:.3rem .7rem;cursor:pointer">&#8722; token</button>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.6rem">
+        <span style="font-family:var(--mono);font-size:.62rem;color:var(--muted);text-transform:uppercase;letter-spacing:.1em">Attention matrix</span>
+        <div id="txm-heads-sel" style="display:flex;gap:5px"></div>
+      </div>
+      <canvas id="txm-matrix" width="440" height="380" style="width:100%;max-width:440px;display:block"></canvas>
+    </div>
+    <!-- right: controls + internals -->
+    <div style="width:400px;background:var(--surface);overflow-y:auto;padding:1.5rem">
+      <div style="font-family:var(--mono);font-size:.62rem;color:var(--accent);text-transform:uppercase;letter-spacing:.12em;margin-bottom:.8rem">Controls</div>
+      <div style="font-family:var(--mono);font-size:.62rem;color:var(--muted);margin-bottom:.4rem">attention heads</div>
+      <div style="display:flex;gap:6px;margin-bottom:1rem">
+        <button class="txm-h-btn" data-h="1" onclick="txmSetHeads(1)" style="flex:1;border-radius:6px;padding:.4rem;font-family:var(--mono);font-size:.7rem;cursor:pointer;border:1px solid var(--border2)">1</button>
+        <button class="txm-h-btn" data-h="2" onclick="txmSetHeads(2)" style="flex:1;border-radius:6px;padding:.4rem;font-family:var(--mono);font-size:.7rem;cursor:pointer;border:1px solid var(--border2)">2</button>
+        <button class="txm-h-btn" data-h="4" onclick="txmSetHeads(4)" style="flex:1;border-radius:6px;padding:.4rem;font-family:var(--mono);font-size:.7rem;cursor:pointer;border:1px solid var(--border2)">4</button>
+      </div>
+      <button id="txm-mask-btn" onclick="txmToggleMask()" style="width:100%;background:var(--surface2);border:1px solid var(--border2);border-radius:8px;color:var(--text);font-family:var(--mono);font-size:.72rem;padding:.55rem;cursor:pointer;margin-bottom:1rem">causal mask: ON</button>
+      <div style="margin-bottom:1.3rem">
+        <div style="display:flex;justify-content:space-between;font-family:var(--mono);font-size:.7rem;color:var(--muted);margin-bottom:5px"><span>temperature &tau;</span><span id="txm-tempval" style="color:var(--accent)">1.00</span></div>
+        <input type="range" min="0.3" max="2" step="0.05" value="1" oninput="txmSetTemp(this.value)" style="width:100%;accent-color:var(--accent)">
+      </div>
+
+      <div style="font-family:var(--mono);font-size:.62rem;color:#ff8aa0;text-transform:uppercase;letter-spacing:.1em;margin-bottom:.5rem">Query token: <span id="txm-qlabel" style="color:var(--text)"></span></div>
+      <div style="font-family:var(--mono);font-size:.58rem;color:var(--muted);margin-bottom:.5rem">its attention over keys (score \u2192 weight)</div>
+      <div id="txm-weights" style="margin-bottom:1.4rem"></div>
+
+      <div style="font-family:var(--mono);font-size:.62rem;color:var(--accent4);text-transform:uppercase;letter-spacing:.1em;margin-bottom:.5rem">Next-token distribution</div>
+      <div style="font-family:var(--mono);font-size:.58rem;color:var(--muted);margin-bottom:.5rem">language modeling head on the last token</div>
+      <div id="txm-next"></div>
+    </div>
+  </div>
+</div>
+
+<script src="assets/js/core/shell.js"></script>
+
+<script src="assets/js/core/navigation.js"></script>
+
+<dialog id="teaching-photo-dialog" aria-labelledby="teaching-dialog-title" aria-describedby="teaching-dialog-caption">
+ <div class="teaching-dialog-bar"><h2 id="teaching-dialog-title">In the classroom</h2><button type="button" class="teaching-dialog-close" autofocus>Close</button></div>
+ <img id="teaching-dialog-image" alt="">
+ <p id="teaching-dialog-caption"></p>
+</dialog>
+<script src="assets/js/core/photo-gallery.js"></script>
+
+</body>
+</html>

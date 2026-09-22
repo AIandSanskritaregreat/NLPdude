@@ -1,0 +1,20 @@
+/* Reading and keyboard refinements. */
+:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+.sc-card[role="button"] { cursor: pointer; }
+.mc-skip { position:fixed;top:8px;left:8px;z-index:100000;padding:10px 16px;background:var(--surface);color:var(--text);transform:translateY(-160%); }
+.mc-skip:focus { transform:none; }
+.mc-table-scroll { width:100%;overflow-x:auto; }
+.lesson-p a { color:var(--ink);text-decoration:underline;text-underline-offset:2px; }
+.lesson-math { max-width:100%;overflow-x:auto; }
+.viz-body { min-width:0; }
+#edit-lab { --bg:#0B101F;--surface:#111A30;--surface2:#182342;--surface3:#223055;--border:rgba(214,226,255,.14);--border2:rgba(214,226,255,.26);--text:#ECF1FF;--muted:#8E9AC4;--accent:#4DE3FF;--accent2:#A18FFF;--accent3:#FF5F8E;--accent4:#3DDC84; }
+@media(max-width:640px){
+ .sub-nav,.lesson-nav { gap:6px;padding:10px 12px;flex-wrap:wrap; }
+ .lesson-crumb { white-space:normal; }
+ .mc-toc-panel { max-width:calc(100vw - 24px); }
+ .lesson-body,.sub-body { overflow-wrap:break-word; }
+ #tx-model>div:nth-child(2),#llm-model>div:nth-child(2) { flex-wrap:wrap;height:auto!important; }
+ #tx-model>div:nth-child(2)>div,#llm-model>div:nth-child(2)>div { max-width:100%;min-width:0!important; }
+ #tx-model,#llm-model { overflow-y:auto!important; }
+}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;transition-duration:.01ms!important}}

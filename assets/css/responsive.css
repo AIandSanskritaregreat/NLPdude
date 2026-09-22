@@ -1,0 +1,14 @@
+@media(max-width:700px){
+ #gd-explorer,#nn-playground,#llm-anatomy,#llm-model,#tx-full,#tx-model { overflow:auto!important; }
+ #gd-explorer>div,#nn-playground>div,#llm-anatomy>div,#llm-model>div,#tx-full>div,#tx-model>div { position:relative!important;top:auto!important;left:auto!important;right:auto!important;bottom:auto!important;width:100%!important;max-width:100%; }
+ #gd-explorer>div:first-child,#nn-playground>div:first-child,#llm-anatomy>div:first-child,#llm-model>div:first-child,#tx-full>div:first-child,#tx-model>div:first-child { position:sticky!important;top:0!important;min-height:56px;height:auto!important;padding:12px!important;gap:8px; }
+ #gd-explorer>div:first-child>div,#nn-playground>div:first-child>div,#llm-anatomy>div:first-child>div,#llm-model>div:first-child>div,#tx-full>div:first-child>div,#tx-model>div:first-child>div { font-size:12px!important; }
+ #gd-explorer>div:nth-child(3),#nn-playground>div:nth-child(3),#llm-anatomy>div:nth-child(3),#tx-full>div:nth-child(3) { height:680px;min-height:440px; }
+ #gd-explorer>div:nth-child(3)>div { white-space:normal!important;max-width:90%;text-align:center; }
+ #llm-model>div:nth-child(2),#tx-model>div:nth-child(2) { display:flex;flex-direction:column; }
+ #llm-model>div:nth-child(2)>div,#tx-model>div:nth-child(2)>div { width:100%!important;flex:auto!important; }
+}
+@media(max-width:700px){
+ #nn-playground [style*="white-space:nowrap"] { white-space:normal!important;max-width:90%;text-align:center; }
+ #gd-explorer>div:first-child>span:first-child,#nn-playground>div:first-child>span:first-child,#llm-anatomy>div:first-child>span:first-child,#llm-model>div:first-child>span:first-child,#tx-full>div:first-child>span:first-child,#tx-model>div:first-child>span:first-child {font-size:.88rem!important;letter-spacing:.04em!important;}
+}
