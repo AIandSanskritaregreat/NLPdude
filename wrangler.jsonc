@@ -1,6 +1,8 @@
 {
   "name": "math-ml-06c5",
   "compatibility_date": "2026-09-26",
+  "preview_urls": true,
+  "previews": {},
   "assets": {
     "directory": "./"
   }
