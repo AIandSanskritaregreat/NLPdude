@@ -270,7 +270,6 @@
   <div class="lesson-body" id="lesson-body"></div>
 </div>
 
-
 <template id="editdist-latex-1">\[D[i,j] = \min \begin{cases} D[i-1,\;j] + \text{del-cost}(X[i]) \\ D[i,\;j-1] + \text{ins-cost}(Y[j]) \\ D[i-1,\;j-1] + \text{sub-cost}(X[i],\,Y[j]) \end{cases}\]</template>
 <template id="editdist-latex-2">\[D[i,j] = \min \begin{cases} D[i-1,j]+1 \\ D[i,j-1]+1 \\ D[i-1,j-1]+ \begin{cases} 2 & X[i]\neq Y[j] \\ 0 & X[i]=Y[j] \end{cases} \end{cases}\]</template>
 
